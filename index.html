@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Studio Raquel: papelaria personalizada feita para celebrar os seus momentos." />
+    <title>Studio Raquel | Papelaria personalizada</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Studio Raquel, início">
+        <span class="brand-mark" aria-hidden="true">SR</span>
+        <span><strong>Studio Raquel</strong><small>papelaria personalizada</small></span>
+      </a>
+      <button class="cart-button" id="open-cart" type="button" aria-controls="cart-drawer" aria-expanded="false">
+        <span class="cart-icon" aria-hidden="true">🛒</span>
+        <span>Meu carrinho</span>
+        <b id="cart-count" aria-label="0 itens">0</b>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">feito à mão, pensado para você</p>
+          <h1>Caixas Milk para<br /><em>grandes memórias.</em></h1>
+          <p class="hero-text">Lembrancinhas personalizadas para celebrar cada tema, nome e momento com muito carinho.</p>
+          <a class="button button-primary" href="#catalogo">Ver catálogo <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-art">
+          <img class="hero-logo" src="assets/logo-banner.png" alt="Studio Raquel Personalizados" />
+        </div>
+      </section>
+
+      <section class="featured section-wrap" aria-labelledby="destaques-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">mais pedidos</p><h2 id="destaques-title">Destaques da semana</h2></div>
+          <div class="carousel-controls" aria-label="Controles dos destaques">
+            <button class="icon-button" id="carousel-prev" type="button" aria-label="Produto anterior">←</button>
+            <button class="icon-button" id="carousel-next" type="button" aria-label="Próximo produto">→</button>
+          </div>
+        </div>
+        <div class="carousel-viewport"><div class="carousel-track" id="featured-products"></div></div>
+      </section>
+
+      <section class="catalog section-wrap" id="catalogo" aria-labelledby="catalog-title">
+        <div class="section-heading catalog-heading">
+          <div><p class="eyebrow">um produto, muitos temas</p><h2 id="catalog-title">Caixa Milk</h2></div>
+          <p class="catalog-note">As fotos e temas dos cards são apenas ilustrativos. Você pode escolher qualquer tema; informe sua ideia no campo de cada produto. O Saco Zip Lock também permite escolher chaveiro.</p>
+        </div>
+        <div class="product-grid" id="product-grid"></div>
+      </section>
+
+      <section class="steps">
+        <div class="section-wrap"><p class="eyebrow">simples assim</p><h2>Do seu jeito, do começo ao fim.</h2>
+          <div class="step-grid">
+            <div class="step"><span>01</span><h3>Escolha seus itens</h3><p>Monte seu pedido com os produtos que mais combinam com a sua ocasião.</p></div>
+            <div class="step"><span>02</span><h3>Conte sua ideia</h3><p>Depois, conversamos pelo WhatsApp sobre cores, nomes e detalhes.</p></div>
+            <div class="step"><span>03</span><h3>Receba com carinho</h3><p>Produzimos tudo com cuidado e combinamos a melhor entrega para você.</p></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><div class="section-wrap"><a class="brand" href="#"><span class="brand-mark" aria-hidden="true">SR</span><span><strong>Studio Raquel</strong><small>papelaria personalizada</small></span></a><p>Feito para celebrar cada detalhe.</p><small>© <span id="current-year"></span> Studio Raquel</small></div></footer>
+
+    <div class="cart-backdrop" id="cart-backdrop" hidden></div>
+    <aside class="cart-drawer" id="cart-drawer" aria-labelledby="cart-title" aria-hidden="true">
+      <div class="cart-header"><div><p class="eyebrow">seu pedido</p><h2 id="cart-title">Meu carrinho</h2></div><button class="close-button" id="close-cart" type="button" aria-label="Fechar carrinho">×</button></div>
+      <div class="cart-content" id="cart-content"></div>
+      <div class="cart-footer" id="cart-footer"></div>
+    </aside>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="script.js"></script>
+  </body>
+</html>
