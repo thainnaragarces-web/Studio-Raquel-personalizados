@@ -1,0 +1,14 @@
+/* Cliente-provided identity and catalog controls. */
+.hero-art{align-items:center;display:flex;justify-content:center}
+.hero-logo{display:block;height:auto;max-height:320px;max-width:100%;object-fit:contain;width:100%}
+.variant-label{color:var(--muted);display:block;font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:4px;text-transform:uppercase}
+.variant-select{background:var(--cream);border:1px solid var(--line);border-radius:4px;color:var(--ink);font-size:13px;margin-bottom:14px;padding:8px;width:100%}
+.product-body p{margin-bottom:12px}
+.illustrative-note{color:var(--lilac-dark);display:block;font-size:11px;font-weight:700;margin:-4px 0 10px}
+.theme-label{margin-top:2px}
+.theme-input{background:var(--cream);border:1px solid var(--line);border-radius:4px;color:var(--ink);font-size:13px;margin-bottom:14px;padding:8px;width:100%}
+.theme-input:focus{border-color:var(--lilac-dark);outline:2px solid rgba(121,97,143,.18)}
+.minimum-order{font-size:12px;margin:-5px 0 14px}
+.minimum-order.is-pending{color:#a65b4f}
+.minimum-order.is-met{color:#2c8060}
+@media(max-width:600px){.hero-art{min-width:0;width:100%}.hero-logo{max-height:220px}.variant-select{font-size:12px;padding:7px}}
