@@ -8,12 +8,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=6" />
   </head>
   <body>
     <header class="site-header">
       <a class="brand" href="#" aria-label="Studio Raquel, início">
-        <span class="brand-mark" aria-hidden="true">SR</span>
+        <img class="brand-mark-img" src="assets/banner.png" alt="Logo Studio Raquel" style="width: 44px; height: 44px; object-fit: contain; background: transparent; border: none;" />
         <span><strong>Studio Raquel</strong><small>papelaria personalizada</small></span>
       </a>
       <button class="cart-button" id="open-cart" type="button" aria-controls="cart-drawer" aria-expanded="false">
@@ -24,15 +24,15 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero-copy">
+      <section class="hero" style="display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+        <div class="hero-copy" style="flex: 1 1 380px;">
           <p class="eyebrow">feito à mão, pensado para você</p>
-          <h1>Caixas Milk para<br /><em>grandes memórias.</em></h1>
+          <h1>Papelaria para<br /><em>grandes memórias.</em></h1>
           <p class="hero-text">Lembrancinhas personalizadas para celebrar cada tema, nome e momento com muito carinho.</p>
-          <a class="button button-primary" href="#catalogo">Ver catálogo <span aria-hidden="true">↓</span></a>
+          <a class="button-primary" href="#catalogo">Ver catálogo <span aria-hidden="true">↓</span></a>
         </div>
-        <div class="hero-art">
-          <img class="hero-logo" src="assets/logo-banner.png" alt="Studio Raquel Personalizados" />
+        <div class="hero-art" style="flex: 1 1 400px; display: flex; justify-content: center; align-items: center;">
+          <img class="hero-banner" src="assets/banner.png" alt="Estúdio Raquel Personalizados" style="width: 100%; max-width: 440px; height: auto; max-height: 120px; object-fit: contain; border: none; background: transparent; box-shadow: none; display: block;" />
         </div>
       </section>
 
@@ -49,31 +49,129 @@
 
       <section class="catalog section-wrap" id="catalogo" aria-labelledby="catalog-title">
         <div class="section-heading catalog-heading">
-          <div><p class="eyebrow">um produto, muitos temas</p><h2 id="catalog-title">Caixa Milk</h2></div>
-          <p class="catalog-note">As fotos e temas dos cards são apenas ilustrativos. Você pode escolher qualquer tema; informe sua ideia no campo de cada produto. O Saco Zip Lock também permite escolher chaveiro.</p>
+          <div><p class="eyebrow">um produto, muitos temas</p><h2 id="catalog-title">Catálogo Completo</h2></div>
+          <p class="catalog-note" style="color: var(--muted); font-size: 13px; max-width: 500px;">As fotos dos cards são ilustrativas. Você pode escolher qualquer tema informando a sua ideia diretamente no campo de cada item.</p>
         </div>
         <div class="product-grid" id="product-grid"></div>
       </section>
 
       <section class="steps">
-        <div class="section-wrap"><p class="eyebrow">simples assim</p><h2>Do seu jeito, do começo ao fim.</h2>
+        <div class="section-wrap">
+          <p class="eyebrow">simples assim</p>
+          <h2>Do seu jeito, do começo ao fim.</h2>
           <div class="step-grid">
-            <div class="step"><span>01</span><h3>Escolha seus itens</h3><p>Monte seu pedido com os produtos que mais combinam com a sua ocasião.</p></div>
-            <div class="step"><span>02</span><h3>Conte sua ideia</h3><p>Depois, conversamos pelo WhatsApp sobre cores, nomes e detalhes.</p></div>
-            <div class="step"><span>03</span><h3>Receba com carinho</h3><p>Produzimos tudo com cuidado e combinamos a melhor entrega para você.</p></div>
+            <div class="step"><span>01</span><h3>Escolha seus itens</h3><p>Monte seu pedido com os modelos que mais combinam com a sua festa (pedido mínimo de R$ 40).</p></div>
+            <div class="step"><span>02</span><h3>Informe os detalhes</h3><p>Preencha tema, nome e idade para direcionar tudo pronto para o nosso WhatsApp.</p></div>
+            <div class="step"><span>03</span><h3>Produção com carinho</h3><p>Combinamos a arte, alinhamos os prazos e preparamos cada mimo com dedicação.</p></div>
           </div>
+        </div>
+      </section>
+
+      <!-- ================= NOVA SEÇÃO: NOSSA HISTÓRIA ================= -->
+      <section class="about-section section-wrap" id="nossa-historia">
+        <div class="about-card">
+          <p class="eyebrow">como tudo começou</p>
+          <h2>Nossa História</h2>
+          <p class="about-lead">Uma papelaria afetiva criada para transformar celebrações em memórias inesquecíveis.</p>
+          <div class="about-body">
+            <p>O <strong>Studio Raquel</strong> nasceu do coração de uma mãe criativa e apaixonada por transformar papel em afeto, somado à visão organizada de uma profissional formada em Administração.</p>
+            <p>O que começou no aconchego do lar — preparando com todo o carinho cada detalhe e cada festinha de família — floresceu e se transformou em um ateliê dedicado a eternizar momentos únicos. Aqui, acreditamos que cada comemoração merece um toque especial: peças feitas à mão, acabamentos impecáveis e um cuidado que vai desde a escolha da arte até a entrega na sua mesa.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= NOVA SEÇÃO: DÚVIDAS & ORÇAMENTO ================= -->
+      <section class="faq-section section-wrap" id="duvidas">
+        <div class="faq-box">
+          <div class="faq-icon-wrap">✨</div>
+          <h3>Não encontrou o item que você queria?</h3>
+          <p>Nós fazemos o seu orçamento sob medida! Se você sonhou com um modelo diferente, uma caixinha temática exclusiva ou uma lembrança especial que não viu no catálogo, conte para a gente.</p>
+          <a class="button-primary-quote" href="https://wa.me/5521967693490?text=Ol%C3%A1%2C%20Raquel!%20Gostaria%20de%20fazer%20um%20or%C3%A7amento%20personalizado%20para%20a%20minha%20festa." target="_blank" rel="noopener noreferrer">
+            Solicitar Orçamento no WhatsApp ↗
+          </a>
+        </div>
+      </section>
+
+      <!-- ================= NOVA SEÇÃO: ONDE NOS ENCONTRAR ================= -->
+      <section class="contact-section section-wrap" id="onde-encontrar">
+        <div class="section-heading" style="justify-content: center; text-align: center; margin-bottom: 24px;">
+          <div>
+            <p class="eyebrow">fale com a gente</p>
+            <h2>Onde nos encontrar</h2>
+          </div>
+        </div>
+        <div class="contact-grid">
+          <a class="contact-card whatsapp" href="https://wa.me/5521967693490" target="_blank" rel="noopener noreferrer">
+            <div class="contact-icon">💬</div>
+            <div>
+              <strong>WhatsApp</strong>
+              <span>(21) 96769-3490</span>
+              <small>Tire dúvidas e faça pedidos personalizados</small>
+            </div>
+          </a>
+          <a class="contact-card instagram" href="https://www.instagram.com/raquel.personalizadoss?stkn=eWVsYWs1N3RieGRh" target="_blank" rel="noopener noreferrer">
+            <div class="contact-icon">📸</div>
+            <div>
+              <strong>Instagram</strong>
+              <span>@raquel.personalizadoss</span>
+              <small>Inspirações, novidades e bastidores da produção</small>
+            </div>
+          </a>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer"><div class="section-wrap"><a class="brand" href="#"><span class="brand-mark" aria-hidden="true">SR</span><span><strong>Studio Raquel</strong><small>papelaria personalizada</small></span></a><p>Feito para celebrar cada detalhe.</p><small>© <span id="current-year"></span> Studio Raquel</small></div></footer>
+    <footer class="site-footer">
+      <div class="section-wrap">
+        <a class="brand" href="#">
+          <img class="brand-mark-img" src="assets/banner.png" alt="Logo Studio Raquel" style="width: 44px; height: 44px; object-fit: contain; background: transparent; border: none;" />
+          <span><strong>Studio Raquel</strong><small>papelaria personalizada</small></span>
+        </a>
+        <p>Feito para celebrar cada detalhe do seu momento.</p>
+        
+        <div class="social-links">
+          <a class="instagram-btn" href="https://www.instagram.com/raquel.personalizadoss?stkn=eWVsYWs1N3RieGRh" target="_blank" rel="noopener noreferrer">
+            📸 Siga no Instagram: @raquel.personalizadoss
+          </a>
+        </div>
 
+        <small>© <span id="current-year"></span> Studio Raquel Personalizados. Todos os direitos reservados.</small>
+      </div>
+    </footer>
+
+    <!-- Gaveta do Carrinho -->
     <div class="cart-backdrop" id="cart-backdrop" hidden></div>
     <aside class="cart-drawer" id="cart-drawer" aria-labelledby="cart-title" aria-hidden="true">
-      <div class="cart-header"><div><p class="eyebrow">seu pedido</p><h2 id="cart-title">Meu carrinho</h2></div><button class="close-button" id="close-cart" type="button" aria-label="Fechar carrinho">×</button></div>
+      <div class="cart-header">
+        <div><p class="eyebrow">seu pedido</p><h2 id="cart-title">Meu carrinho</h2></div>
+        <button class="close-button" id="close-cart" type="button" aria-label="Fechar carrinho">×</button>
+      </div>
+      
       <div class="cart-content" id="cart-content"></div>
+
+      <!-- Campos de Finalização Obrigatórios -->
+      <div class="cart-checkout-fields" id="cart-checkout-fields">
+        <h4>🎈 Dados da Festa para Fechar</h4>
+        <div class="field-group">
+          <label for="order-theme">Tema da Festa *</label>
+          <input type="text" id="order-theme" placeholder="Ex.: Safari, Princesas, Barbie..." required />
+        </div>
+        <div class="field-group">
+          <label for="order-child">Nome e/ou Idade da Criança *</label>
+          <input type="text" id="order-child" placeholder="Ex.: Lucas, 4 anos" required />
+        </div>
+        <div class="field-group">
+          <label for="order-shipping">Opção de Entrega ou Retirada *</label>
+          <select id="order-shipping">
+            <option value="Recolha no local">Recolha no local (Sem taxa)</option>
+            <option value="Envio">Envio / Entrega (+ R$ 5,00 taxa fixa)</option>
+          </select>
+        </div>
+      </div>
+
       <div class="cart-footer" id="cart-footer"></div>
     </aside>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="script.js"></script>
   </body>
