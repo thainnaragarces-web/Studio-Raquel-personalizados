@@ -2,7 +2,6 @@
 const WHATSAPP_NUMBER = "5521967693490";
 const MINIMUM_ORDER = 40;
 const SHIPPING_FEE = 5.00;
-
 const products = [
   {
     id: "caixa-milk",
@@ -307,7 +306,6 @@ function productCard(product, suffix) {
       </select>
     </div>` : "";
 
-  // Setas e bolinhas do carrossel na foto
   const carouselControls = totalVariants > 1 ? `
     <button class="card-arrow prev" type="button" data-nav-variant="-1" aria-label="Foto anterior">‹</button>
     <button class="card-arrow next" type="button" data-nav-variant="1" aria-label="Próxima foto">›</button>
@@ -318,24 +316,26 @@ function productCard(product, suffix) {
 
   return `
     <article class="product-card" data-product-id="${product.id}" data-current-index="0">
-      <div class="product-image">
+      <div class="product-image" data-open-modal="${product.id}">
         <span class="product-tag">${product.tag}</span>
+        <span class="open-modal-hint">Ver detalhes 🔍</span>
         <img class="product-photo" src="${variant.image}" alt="${product.name}" loading="lazy">
         ${carouselControls}
       </div>
       <div class="product-body">
-        <h3 class="product-title">${product.name}</h3>
+        <h3 class="product-title" data-open-modal="${product.id}">${product.name}</h3>
         <p class="product-desc">${product.description}</p>
-        <span class="illustrative-note">Passe as fotos para ver modelos · Personalize como quiser</span>
+        <span class="illustrative-note">Passe para ver modelos · Personalize como quiser</span>
         ${options}
         <div class="theme-field-wrap">
           <label class="variant-label" for="theme-${product.id}-${suffix}">Qual tema você deseja?</label>
-          <input class="theme-input" id="theme-${product.id}-${suffix}" data-theme-input type="text" required placeholder="Ex.: Patrulha Canina, floral, safari...">
+          <input class="theme-input" id="theme-${product.id}-${suffix}" data-theme-input type="text" required placeholder="Ex.: Patrulha Canina, safari...">
         </div>
         
         <div class="product-meta">
           <span class="price">${money(product.price)}</span>
           <div class="card-action-group">
+            <span class="btn-quick-view" data-open-modal="${product.id}">Ver opções</span>
             <div class="card-qty-control">
               <button type="button" class="btn-qty-mini" data-card-qty-btn="-1" aria-label="Diminuir">−</button>
               <input type="number" class="card-qty-input" data-card-qty-input value="1" min="1" max="999" aria-label="Quantidade">
@@ -352,8 +352,99 @@ function productCard(product, suffix) {
 }
 
 function renderProducts() {
-  $("#product-grid").innerHTML = products.map((item, index) => productCard(item, `catalog-${index}`)).join("");
-  $("#featured-products").innerHTML = products.map((item, index) => productCard(item, `featured-${index}`)).join("");
+  const grid = $("#product-grid");
+  const feat = $("#featured-products");
+  if (grid) grid.innerHTML = products.map((item, index) => productCard(item, `catalog-${index}`)).join("");
+  if (feat) feat.innerHTML = products.map((item, index) => productCard(item, `featured-${index}`)).join("");
+  setupSwipeHandlers();
+}
+
+function openProductModal(productId) {
+  const product = productById(productId);
+  if (!product) return;
+
+  const totalVariants = product.variants.length;
+  const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : " da alça";
+  const options = product.options ? `
+    <div class="option-wrap" style="margin-bottom: 8px;">
+      <label class="variant-label" for="modal-option-${product.id}">Opção${optionLabel}</label>
+      <select class="variant-select" id="modal-option-${product.id}" data-modal-option>
+        ${product.options.map(option => `<option value="${option}">${option}${product.optionPrices ? (product.optionPrices[option] ? ` (+ ${money(product.optionPrices[option])})` : " (sem adicional)") : ""}</option>`).join("")}
+      </select>
+    </div>` : "";
+
+  const carouselControls = totalVariants > 1 ? `
+    <button class="card-arrow prev" type="button" data-modal-nav="-1" aria-label="Foto anterior">‹</button>
+    <button class="card-arrow next" type="button" data-modal-nav="1" aria-label="Próxima foto">›</button>
+    <div class="carousel-dots">
+      ${product.variants.map((_, i) => `<span class="dot ${i === 0 ? "active" : ""}"></span>`).join("")}
+    </div>
+  ` : "";
+
+  $("#product-modal-body").innerHTML = `
+    <div class="modal-image-area" id="modal-image-area" data-modal-product-id="${product.id}" data-current-index="0">
+      <span class="product-tag">${product.tag}</span>
+      <img class="modal-photo" id="modal-photo" src="${product.variants[0].image}" alt="${product.name}">
+      ${carouselControls}
+    </div>
+    <div class="modal-details">
+      <div>
+        <h2 style="font-size: 1.35rem; color: var(--deep-cherry);">${product.name}</h2>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">${product.description}</p>
+        <span class="illustrative-note" style="margin-top: 6px;">👉 Deslize com o dedo ou use as setas para ver os modelos</span>
+      </div>
+
+      ${options}
+
+      <div class="theme-field-wrap">
+        <label class="variant-label" for="modal-theme-${product.id}">Qual tema você deseja na sua festa?</label>
+        <input class="theme-input" id="modal-theme-${product.id}" data-modal-theme type="text" placeholder="Ex.: Patrulha Canina, princesas, safari...">
+      </div>
+
+      <div class="product-meta" style="border-top: 1px dashed var(--line); padding-top: 12px; margin-top: 6px;">
+        <span class="price" style="font-size: 1.4rem;">${money(product.price)}</span>
+        <div class="card-action-group">
+          <div class="card-qty-control" style="height: 38px;">
+            <button type="button" class="btn-qty-mini" data-modal-qty-btn="-1" style="width: 34px;">−</button>
+            <input type="number" class="card-qty-input" id="modal-qty-input" value="1" min="1" max="999" style="width: 38px;">
+            <button type="button" class="btn-qty-mini" data-modal-qty-btn="1" style="width: 34px;">+</button>
+          </div>
+          <button class="button-primary" id="btn-modal-add" type="button" data-modal-add-id="${product.id}" style="padding: 10px 20px; font-size: 0.95rem;">
+            Adicionar ao Carrinho
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  $("#product-modal").classList.add("is-open");
+  $("#product-modal-backdrop").hidden = false;
+  setupModalSwipe();
+}
+
+function closeProductModal() {
+  const modal = $("#product-modal");
+  const backdrop = $("#product-modal-backdrop");
+  if (modal) modal.classList.remove("is-open");
+  if (backdrop) backdrop.hidden = true;
+}
+
+function updateModalImage(nextIndex) {
+  const area = $("#modal-image-area");
+  if (!area) return;
+  const productId = area.dataset.modalProductId;
+  const product = productById(productId);
+  area.dataset.currentIndex = nextIndex;
+
+  const currentVariant = product.variants[nextIndex];
+  const photo = $("#modal-photo");
+  photo.src = currentVariant.image;
+  photo.alt = `${product.name} - foto ${nextIndex + 1}`;
+
+  const dots = area.querySelectorAll(".carousel-dots .dot");
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle("active", idx === nextIndex);
+  });
 }
 
 function cartItems() {
@@ -379,42 +470,49 @@ function renderCart() {
   const grandTotal = subtotal + shippingFee;
   const missing = Math.max(0, MINIMUM_ORDER - subtotal);
 
-  $("#cart-count").textContent = cartCount();
-  $("#cart-count").setAttribute("aria-label", `${cartCount()} itens`);
-
-  const fieldsSection = $("#cart-checkout-fields");
-  if (fieldsSection) {
-    fieldsSection.style.display = items.length ? "block" : "none";
+  const cartCountEl = $("#cart-count");
+  if (cartCountEl) {
+    cartCountEl.textContent = cartCount();
+    cartCountEl.setAttribute("aria-label", `${cartCount()} itens`);
   }
 
-  $("#cart-content").innerHTML = items.length ? items.map(item => `
-    <div class="cart-item">
-      <img src="${item.variant.image}" alt="">
-      <div class="cart-item-info">
-        <strong>${item.product.name}</strong>
-        <small>Tema escolhido: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
-        Unitário: ${money(itemUnitTotal(item))} · <strong>Subtotal: ${money(itemTotal(item))}</strong></small>
-        <div class="quantity-control">
-          <button type="button" data-decrease="${item.key}">−</button>
-          <span>${item.quantity}</span>
-          <button type="button" data-increase="${item.key}">+</button>
-        </div>
-      </div>
-      <button class="remove-item" type="button" data-remove="${item.key}">×</button>
-    </div>
-  `).join("") : `<div class="empty-cart" style="text-align: center; color: var(--muted); padding: 30px 0;"><strong>Seu carrinho está vazio</strong><p>Escolha um modelo para começar seu pedido.</p></div>`;
+  const fieldsSection = $("#cart-checkout-fields");
+  if (fieldsSection) fieldsSection.style.display = items.length ? "block" : "none";
 
-  $("#cart-footer").innerHTML = `
-    <div class="subtotal-row"><span>Subtotal dos Itens:</span><span>${money(subtotal)}</span></div>
-    ${shippingFee > 0 ? `<div class="fee-row" style="color: var(--deep-cherry);"><span>Taxa de Entrega:</span><span>+ ${money(shippingFee)}</span></div>` : ""}
-    <div class="total-final-row"><span>Total com Entrega:</span><span>${money(grandTotal)}</span></div>
-    <div class="minimum-order ${missing ? "is-pending" : "is-met"}">
-      ${missing ? `Faltam ${money(missing)} em produtos para atingir o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido — preencha os dados e envie!"}
-    </div>
-    <button class="whatsapp-button" id="send-whatsapp" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
-      ${subtotal >= MINIMUM_ORDER ? "Finalizar pelo WhatsApp ↗" : `Adicione mais ${money(missing)}`}
-    </button>
-  `;
+  const cartContent = $("#cart-content");
+  if (cartContent) {
+    cartContent.innerHTML = items.length ? items.map(item => `
+      <div class="cart-item">
+        <img src="${item.variant.image}" alt="">
+        <div class="cart-item-info">
+          <strong>${item.product.name}</strong>
+          <small>Tema: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
+          Unitário: ${money(itemUnitTotal(item))} · <strong>Subtotal: ${money(itemTotal(item))}</strong></small>
+          <div class="quantity-control">
+            <button type="button" data-decrease="${item.key}">−</button>
+            <span>${item.quantity}</span>
+            <button type="button" data-increase="${item.key}">+</button>
+          </div>
+        </div>
+        <button class="remove-item" type="button" data-remove="${item.key}">×</button>
+      </div>
+    `).join("") : `<div class="empty-cart" style="text-align: center; color: var(--muted); padding: 30px 0;"><strong>Seu carrinho está vazio</strong><p>Escolha um modelo para começar seu pedido.</p></div>`;
+  }
+
+  const cartFooter = $("#cart-footer");
+  if (cartFooter) {
+    cartFooter.innerHTML = `
+      <div class="subtotal-row"><span>Subtotal dos Itens:</span><span>${money(subtotal)}</span></div>
+      ${shippingFee > 0 ? `<div class="fee-row" style="color: var(--deep-cherry);"><span>Taxa de Entrega:</span><span>+ ${money(shippingFee)}</span></div>` : ""}
+      <div class="total-final-row"><span>Total com Entrega:</span><span>${money(grandTotal)}</span></div>
+      <div class="minimum-order ${missing ? "is-pending" : "is-met"}">
+        ${missing ? `Faltam ${money(missing)} em produtos para atingir o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido — preencha os dados e envie!"}
+      </div>
+      <button class="whatsapp-button" id="send-whatsapp" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
+        ${subtotal >= MINIMUM_ORDER ? "Finalizar pelo WhatsApp ↗" : `Adicione mais ${money(missing)}`}
+      </button>
+    `;
+  }
 }
 
 function changeQuantity(key, delta) { 
@@ -440,6 +538,7 @@ function updateCardImage(card, nextIndex) {
 
 function showToast(message) { 
   const toast = $("#toast"); 
+  if (!toast) return;
   toast.textContent = message; 
   toast.classList.add("show"); 
   setTimeout(() => toast.classList.remove("show"), 2500); 
@@ -447,6 +546,7 @@ function showToast(message) {
 
 function toggleCart(open) { 
   const drawer = $("#cart-drawer"); 
+  if (!drawer) return;
   drawer.classList.toggle("is-open", open); 
   drawer.setAttribute("aria-hidden", String(!open)); 
   $("#open-cart").setAttribute("aria-expanded", String(open)); 
@@ -471,13 +571,13 @@ function sendToWhatsApp() {
   const orderShipping = shippingSelect ? shippingSelect.value : "Recolha no local";
 
   if (!orderTheme) {
-    themeInput.focus();
+    if (themeInput) themeInput.focus();
     showToast("Por favor, preencha o tema da festa no carrinho!");
     return;
   }
 
   if (!orderChild) {
-    childInput.focus();
+    if (childInput) childInput.focus();
     showToast("Por favor, preencha o nome e idade no carrinho!");
     return;
   }
@@ -507,6 +607,7 @@ Gostaria de confirmar a disponibilidade da data e tirar algumas dúvidas para fe
 
 function moveCarousel(direction) {
   const track = $("#featured-products");
+  if (!track) return;
   const cards = track.querySelectorAll(".product-card");
   if (!cards.length) return;
   const visible = window.innerWidth <= 600 ? 1 : window.innerWidth <= 800 ? 2 : 3;
@@ -515,27 +616,178 @@ function moveCarousel(direction) {
   track.style.transform = `translateX(-${state.featuredIndex * (cards[0].offsetWidth + 20)}px)`;
 }
 
-document.addEventListener("click", event => {
-  const target = event.target.closest("button");
-  if (!target) return;
+function setupSwipeHandlers() {
+  const featuredTrack = $("#featured-products");
+  let startX = 0;
 
-  // Botões de quantidade no card (+ e -)
-  if (target.dataset.cardQtyBtn) {
-    const card = target.closest(".product-card");
+  if (featuredTrack) {
+    featuredTrack.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    featuredTrack.addEventListener("touchend", e => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) moveCarousel(1);
+        else moveCarousel(-1);
+      }
+    }, { passive: true });
+  }
+
+  document.querySelectorAll(".product-image").forEach(imgArea => {
+    let cardStartX = 0;
+    imgArea.addEventListener("touchstart", e => {
+      cardStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    imgArea.addEventListener("touchend", e => {
+      const cardEndX = e.changedTouches[0].clientX;
+      const diff = cardStartX - cardEndX;
+      if (Math.abs(diff) > 35) {
+        const card = imgArea.closest(".product-card");
+        const itemProduct = productById(card.dataset.productId);
+        const currentIndex = parseInt(card.dataset.currentIndex || "0", 10);
+        const totalVariants = itemProduct.variants.length;
+        let nextIndex = diff > 0 ? (currentIndex + 1) % totalVariants : (currentIndex - 1 + totalVariants) % totalVariants;
+        updateCardImage(card, nextIndex);
+      }
+    }, { passive: true });
+  });
+}
+
+function setupModalSwipe() {
+  const modalImgArea = $("#modal-image-area");
+  if (!modalImgArea) return;
+  let mStartX = 0;
+
+  modalImgArea.addEventListener("touchstart", e => {
+    mStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  modalImgArea.addEventListener("touchend", e => {
+    const mEndX = e.changedTouches[0].clientX;
+    const diff = mStartX - mEndX;
+    if (Math.abs(diff) > 35) {
+      const productId = modalImgArea.dataset.modalProductId;
+      const itemProduct = productById(productId);
+      const currentIndex = parseInt(modalImgArea.dataset.currentIndex || "0", 10);
+      const totalVariants = itemProduct.variants.length;
+      let nextIndex = diff > 0 ? (currentIndex + 1) % totalVariants : (currentIndex - 1 + totalVariants) % totalVariants;
+      updateModalImage(nextIndex);
+    }
+  }, { passive: true });
+}
+
+let autoPlayTimer = null;
+
+function startAutoPlay() {
+  stopAutoPlay();
+  autoPlayTimer = setInterval(() => {
+    const track = $("#featured-products");
+    if (!track) return;
+    const cards = track.querySelectorAll(".product-card");
+    if (!cards.length) return;
+    
+    const visible = window.innerWidth <= 600 ? 1 : window.innerWidth <= 800 ? 2 : 3;
+    const max = Math.max(0, cards.length - visible);
+
+    if (state.featuredIndex >= max) {
+      state.featuredIndex = 0;
+      track.style.transform = `translateX(0px)`;
+    } else {
+      moveCarousel(1);
+    }
+  }, 3500);
+}
+
+function stopAutoPlay() {
+  if (autoPlayTimer) {
+    clearInterval(autoPlayTimer);
+    autoPlayTimer = null;
+  }
+}
+
+const viewport = document.querySelector(".carousel-viewport");
+if (viewport) {
+  viewport.addEventListener("mouseenter", stopAutoPlay);
+  viewport.addEventListener("mouseleave", startAutoPlay);
+  viewport.addEventListener("touchstart", stopAutoPlay, { passive: true });
+  viewport.addEventListener("touchend", () => {
+    setTimeout(startAutoPlay, 2000);
+  }, { passive: true });
+}
+
+document.addEventListener("click", event => {
+  const openModalTrigger = event.target.closest("[data-open-modal]");
+  if (openModalTrigger && !event.target.closest(".card-arrow") && !event.target.closest(".add-button") && !event.target.closest(".card-qty-control")) {
+    const pId = openModalTrigger.dataset.openModal;
+    openProductModal(pId);
+    return;
+  }
+
+  if (event.target.id === "close-product-modal" || event.target.id === "product-modal-backdrop") {
+    closeProductModal();
+    return;
+  }
+
+  if (event.target.dataset.modalNav) {
+    const modalImgArea = $("#modal-image-area");
+    const delta = parseInt(event.target.dataset.modalNav, 10);
+    const itemProduct = productById(modalImgArea.dataset.modalProductId);
+    const currentIndex = parseInt(modalImgArea.dataset.currentIndex || "0", 10);
+    const totalVariants = itemProduct.variants.length;
+    let nextIndex = (currentIndex + delta + totalVariants) % totalVariants;
+    updateModalImage(nextIndex);
+    return;
+  }
+
+  if (event.target.dataset.modalQtyBtn) {
+    const input = $("#modal-qty-input");
+    let val = parseInt(input.value || "1", 10) + parseInt(event.target.dataset.modalQtyBtn, 10);
+    if (isNaN(val) || val < 1) val = 1;
+    input.value = val;
+    return;
+  }
+
+  if (event.target.id === "btn-modal-add") {
+    const pId = event.target.dataset.modalAddId;
+    const itemProduct = productById(pId);
+    const modalArea = $("#modal-image-area");
+    const currentIndex = modalArea.dataset.currentIndex || "0";
+    const themeInput = $("#modal-theme-" + pId);
+    const theme = themeInput ? themeInput.value.trim() : "";
+
+    if (!theme) {
+      themeInput.focus();
+      showToast("Informe o tema desejado para adicionar");
+      return;
+    }
+
+    const qty = parseInt($("#modal-qty-input").value || "1", 10);
+    const option = $("#modal-option-" + pId)?.value;
+
+    changeQuantity(`${itemProduct.id}:${currentIndex}:${option || ""}:${encodeURIComponent(theme)}`, qty);
+    showToast(`${qty}x ${itemProduct.name} adicionado(s)`);
+    closeProductModal();
+    return;
+  }
+
+  if (event.target.dataset.cardQtyBtn) {
+    const card = event.target.closest(".product-card");
     const qtyInput = card.querySelector("[data-card-qty-input]");
-    const delta = parseInt(target.dataset.cardQtyBtn, 10);
+    const delta = parseInt(event.target.dataset.cardQtyBtn, 10);
     let val = parseInt(qtyInput.value || "1", 10) + delta;
     if (isNaN(val) || val < 1) val = 1;
     qtyInput.value = val;
     return;
   }
 
-  // Passar fotos no card (‹ e ›)
-  if (target.dataset.navVariant) {
-    const card = target.closest(".product-card");
+  if (event.target.dataset.navVariant) {
+    const card = event.target.closest(".product-card");
     const itemProduct = productById(card.dataset.productId);
     const currentIndex = parseInt(card.dataset.currentIndex || "0", 10);
-    const delta = parseInt(target.dataset.navVariant, 10);
+    const delta = parseInt(event.target.dataset.navVariant, 10);
     const totalVariants = itemProduct.variants.length;
     let nextIndex = (currentIndex + delta) % totalVariants;
     if (nextIndex < 0) nextIndex = totalVariants - 1;
@@ -543,14 +795,18 @@ document.addEventListener("click", event => {
     return;
   }
 
-  // Adicionar ao carrinho
-  if (target.dataset.add) {
-    const card = target.closest(".product-card");
-    const itemProduct = productById(target.dataset.add);
+  if (event.target.dataset.add) {
+    const card = event.target.closest(".product-card");
+    const itemProduct = productById(event.target.dataset.add);
     const currentIndex = card.dataset.currentIndex || "0";
     const themeInput = card.querySelector("[data-theme-input]");
-    const theme = themeInput.value.trim();
+    const theme = themeInput ? themeInput.value.trim() : "";
+    
     if (!theme) {
+      if (window.innerWidth <= 600) {
+        openProductModal(itemProduct.id);
+        return;
+      }
       themeInput.focus();
       showToast("Informe o tema desejado para adicionar");
       return;
@@ -564,16 +820,17 @@ document.addEventListener("click", event => {
     changeQuantity(`${itemProduct.id}:${currentIndex}:${option || ""}:${encodeURIComponent(theme)}`, quantityToAdd);
     showToast(`${quantityToAdd}x ${itemProduct.name} adicionado(s)`);
     if (qtyInput) qtyInput.value = 1;
+    return;
   }
 
-  if (target.dataset.increase) changeQuantity(target.dataset.increase, 1);
-  if (target.dataset.decrease) changeQuantity(target.dataset.decrease, -1);
-  if (target.dataset.remove) { delete state.cart[target.dataset.remove]; renderCart(); }
-  if (target.id === "open-cart") toggleCart(true);
-  if (target.id === "close-cart") toggleCart(false);
-  if (target.id === "send-whatsapp") sendToWhatsApp();
-  if (target.id === "carousel-next") moveCarousel(1);
-  if (target.id === "carousel-prev") moveCarousel(-1);
+  if (event.target.dataset.increase) changeQuantity(event.target.dataset.increase, 1);
+  if (event.target.dataset.decrease) changeQuantity(event.target.dataset.decrease, -1);
+  if (event.target.dataset.remove) { delete state.cart[event.target.dataset.remove]; renderCart(); }
+  if (event.target.id === "open-cart") toggleCart(true);
+  if (event.target.id === "close-cart") toggleCart(false);
+  if (event.target.id === "send-whatsapp") sendToWhatsApp();
+  if (event.target.id === "carousel-next") moveCarousel(1);
+  if (event.target.id === "carousel-prev") moveCarousel(-1);
 });
 
 document.addEventListener("change", event => {
@@ -584,8 +841,14 @@ document.addEventListener("change", event => {
   if (event.target.id === "order-shipping") renderCart();
 });
 
-$("#cart-backdrop").addEventListener("click", () => toggleCart(false));
+const backdrop = $("#cart-backdrop");
+if (backdrop) backdrop.addEventListener("click", () => toggleCart(false));
+const modalBackdrop = $("#product-modal-backdrop");
+if (modalBackdrop) modalBackdrop.addEventListener("click", closeProductModal);
+
 renderProducts(); 
 renderCart(); 
-$("#current-year").textContent = new Date().getFullYear();
+startAutoPlay();
+const currentYearEl = $("#current-year");
+if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
 window.addEventListener("resize", () => { state.featuredIndex = 0; moveCarousel(0); });
