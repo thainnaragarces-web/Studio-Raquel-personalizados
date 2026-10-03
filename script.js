@@ -295,17 +295,17 @@ const state = { cart: {}, featuredIndex: 0, currentModalProduct: null, currentMo
 const $ = selector => document.querySelector(selector);
 const productById = id => products.find(product => product.id === id);
 
+/* CRIAÇÃO DO CARD LIMPO (PREÇO ÚNICO + ZOOM) */
 function createProductCard(product) {
   const variant = product.variants[0];
   return `
-    <article class="product-card-item" data-open-product="${product.id}">
-      <div class="card-thumb-wrap">
-        <span class="card-badge-price">${product.tag}</span>
+    <article class="modern-product-card" data-open-product="${product.id}">
+      <div class="card-img-container">
         <img src="${variant.image}" alt="${product.name}" loading="lazy">
       </div>
-      <div class="card-info">
-        <strong class="card-name">${product.name}</strong>
-        <span class="card-price">${money(product.price)}</span>
+      <div class="card-details-row">
+        <span class="card-title-lbl">${product.name}</span>
+        <span class="card-price-badge">${money(product.price)}</span>
       </div>
     </article>
   `;
@@ -318,6 +318,92 @@ function renderSite() {
   if (feat) feat.innerHTML = products.map(createProductCard).join("");
 }
 
+/* INTERSECTION OBSERVER PARA O EFEITO DE SUBIDA (REVEAL) */
+function setupScrollReveal() {
+  const section = document.querySelector(".scroll-reveal-section");
+  if (!section) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        section.classList.add("is-revealed");
+        const cards = section.querySelectorAll(".modern-product-card");
+        cards.forEach((card, i) => {
+          card.style.transitionDelay = `${i * 0.08}s`;
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+
+  observer.observe(section);
+}
+
+/* LUPA DE PESQUISA EM TEMPO REAL */
+function setupSearch() {
+  const toggleSearchBtn = $("#toggle-search");
+  const headerSearchBar = $("#header-search-bar");
+  const searchInput = $("#product-search-input");
+  const clearSearchBtn = $("#clear-search-btn");
+
+  if (!toggleSearchBtn || !headerSearchBar || !searchInput) return;
+
+  toggleSearchBtn.addEventListener("click", () => {
+    const isHidden = headerSearchBar.hidden;
+    headerSearchBar.hidden = !isHidden;
+    toggleSearchBtn.classList.toggle("is-active", isHidden);
+    if (isHidden) {
+      setTimeout(() => searchInput.focus(), 100);
+    } else {
+      searchInput.value = "";
+      filterProducts("");
+    }
+  });
+
+  searchInput.addEventListener("input", e => {
+    const term = e.target.value;
+    clearSearchBtn.classList.toggle("is-visible", term.trim().length > 0);
+    filterProducts(term);
+  });
+
+  clearSearchBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    clearSearchBtn.classList.remove("is-visible");
+    filterProducts("");
+    searchInput.focus();
+  });
+}
+
+function filterProducts(searchTerm) {
+  const term = searchTerm.toLowerCase().trim();
+  const grid = $("#product-grid");
+  if (!grid) return;
+
+  const filtered = products.filter(p => 
+    p.name.toLowerCase().includes(term) || 
+    p.description.toLowerCase().includes(term)
+  );
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="no-results-msg">
+        <strong>Nenhum produto encontrado</strong>
+        <p>Não encontramos nada com "<em>${searchTerm}</em>". Tente outro termo ou fale conosco no WhatsApp!</p>
+      </div>
+    `;
+  } else {
+    grid.innerHTML = filtered.map(createProductCard).join("");
+  }
+
+  if (term.length > 0) {
+    const catalogSection = $("#catalogo");
+    if (catalogSection) {
+      const offsetTop = catalogSection.getBoundingClientRect().top + window.pageYOffset - 110;
+      window.scrollTo({ top: offsetTop, behavior: "smooth" });
+    }
+  }
+}
+
+/* MODAL DE TELA CHEIA */
 function openModal(productId) {
   const product = productById(productId);
   if (!product) return;
@@ -411,7 +497,7 @@ function setupGallerySwipe() {
   }, { passive: true });
 }
 
-/* CARROSSEL INFINITO COM ARRASTO POR DEDO (TOUCH SWIPE) */
+/* CARROSSEL DE MAIS VENDIDOS */
 let autoPlayTimer = null;
 
 function startInfiniteCarousel() {
@@ -428,10 +514,10 @@ function stopInfiniteCarousel() {
 function moveCarousel(direction) {
   const track = $("#featured-products");
   if (!track) return;
-  const cards = track.querySelectorAll(".product-card-item");
+  const cards = track.querySelectorAll(".modern-product-card");
   if (!cards.length) return;
 
-  const cardWidth = cards[0].offsetWidth + 14;
+  const cardWidth = cards[0].offsetWidth + 16;
   const visible = Math.floor(track.parentElement.offsetWidth / cardWidth) || 1;
   const max = Math.max(0, cards.length - visible);
 
@@ -439,11 +525,10 @@ function moveCarousel(direction) {
   if (state.featuredIndex > max) state.featuredIndex = 0;
   if (state.featuredIndex < 0) state.featuredIndex = max;
 
-  track.style.transition = "transform 0.35s ease";
+  track.style.transition = "transform 0.4s ease";
   track.style.transform = `translateX(-${state.featuredIndex * cardWidth}px)`;
 }
 
-/* CONFIGURAÇÃO DO SWIPE POR TOQUE NO CARROSSEL */
 function setupCarouselSwipe() {
   const container = document.getElementById("carousel-container");
   const track = document.getElementById("featured-products");
@@ -464,9 +549,9 @@ function setupCarouselSwipe() {
   container.addEventListener("touchmove", e => {
     if (!isSwiping) return;
     currentX = e.touches[0].clientX;
-    const cards = track.querySelectorAll(".product-card-item");
+    const cards = track.querySelectorAll(".modern-product-card");
     if (!cards.length) return;
-    const cardWidth = cards[0].offsetWidth + 14;
+    const cardWidth = cards[0].offsetWidth + 16;
     const currentOffset = -state.featuredIndex * cardWidth;
     const delta = currentX - startX;
     track.style.transform = `translateX(${currentOffset + delta}px)`;
@@ -477,11 +562,8 @@ function setupCarouselSwipe() {
     isSwiping = false;
     const diff = startX - currentX;
     if (Math.abs(diff) > 40) {
-      if (diff > 0) {
-        moveCarousel(1);
-      } else {
-        moveCarousel(-1);
-      }
+      if (diff > 0) moveCarousel(1);
+      else moveCarousel(-1);
     } else {
       moveCarousel(0);
     }
@@ -598,7 +680,7 @@ Gostaria de confirmar a encomenda! ✨`;
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
 }
 
-/* EVENTOS */
+/* EVENTOS DE CLIQUE */
 document.addEventListener("click", e => {
   const cardTrigger = e.target.closest("[data-open-product]");
   if (cardTrigger) {
@@ -660,16 +742,17 @@ document.addEventListener("click", e => {
   if (e.target.id === "open-cart") toggleCart(true);
   if (e.target.id === "close-cart" || e.target.id === "cart-backdrop") toggleCart(false);
   if (e.target.id === "send-whatsapp") sendToWhatsApp();
-  if (e.target.id === "carousel-next") moveCarousel(1);
-  if (e.target.id === "carousel-prev") moveCarousel(-1);
 });
 
 document.addEventListener("change", e => {
   if (e.target.id === "order-shipping") renderCart();
 });
 
+/* INICIALIZAÇÃO */
 renderSite();
 renderCart();
 startInfiniteCarousel();
 setupCarouselSwipe();
+setupScrollReveal();
+setupSearch();
 $("#current-year").textContent = new Date().getFullYear();

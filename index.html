@@ -8,10 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=30" />
+    <link rel="stylesheet" href="styles.css?v=40" />
   </head>
   <body>
-    <!-- CABEÇALHO -->
+    <!-- CABEÇALHO COM LUPA E CARRINHO -->
     <header class="site-header">
       <a class="brand-link" href="#" aria-label="Studio Raquel Personalizados">
         <div class="brand-text-block">
@@ -19,10 +19,34 @@
           <span class="brand-sub">personalizados & papelaria</span>
         </div>
       </a>
-      <button class="cart-button" id="open-cart" type="button" aria-controls="cart-drawer" aria-expanded="false">
-        <span class="cart-icon">🛒</span>
-        <b id="cart-count">0</b>
-      </button>
+      <div class="header-actions">
+        <!-- Botão da Lupa de Pesquisa -->
+        <button class="search-toggle-btn" id="toggle-search" type="button" aria-label="Buscar produtos">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+
+        <!-- Botão do Carrinho -->
+        <button class="cart-button" id="open-cart" type="button" aria-controls="cart-drawer" aria-expanded="false">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-text-lbl">Carrinho</span>
+          <b id="cart-count">0</b>
+        </button>
+      </div>
+
+      <!-- Barra de Pesquisa Expansível -->
+      <div class="header-search-bar" id="header-search-bar" hidden>
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#736769" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="product-search-input" placeholder="O que você está procurando? (Ex.: caixa milk, convite...)" autocomplete="off" />
+          <button type="button" id="clear-search-btn" class="clear-search-btn" aria-label="Limpar pesquisa">✕</button>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -30,71 +54,71 @@
       <section class="hero-compact">
         <p class="eyebrow">feito à mão, pensado para você</p>
         <h1>Papelaria para <em>grandes memórias.</em></h1>
-        <p class="hero-sub">Lembrancinhas personalizadas para celebrar cada tema e momento com amor.</p>
+        <p class="hero-sub">Lembrancinhas personalizadas para celebrar cada tema, nome e momento com amor.</p>
         <a class="button-primary" href="#catalogo">Ver catálogo ↓</a>
       </section>
 
-      <!-- DESTAQUES DA SEMANA (LOOP E SWIPE COM DEDO) -->
-      <section class="featured-section" aria-labelledby="destaques-title">
-        <div class="section-header-row">
-          <div>
-            <p class="eyebrow">mais pedidos</p>
-            <h2 id="destaques-title">Destaques da semana</h2>
-          </div>
-          <div class="carousel-nav-arrows">
-            <button class="arrow-btn" id="carousel-prev" type="button" aria-label="Anterior">←</button>
-            <button class="arrow-btn" id="carousel-next" type="button" aria-label="Próximo">→</button>
-          </div>
+      <!-- MAIS VENDIDOS / DESTAQUES COM REVEAL DE SUBIDA -->
+      <section class="featured-section scroll-reveal-section" id="mais-pedidos" aria-labelledby="destaques-title">
+        <div class="section-header-clean">
+          <p class="eyebrow">mais pedidos</p>
+          <h2 id="destaques-title">Mais Vendidos</h2>
         </div>
         <div class="carousel-container" id="carousel-container">
           <div class="carousel-track" id="featured-products"></div>
         </div>
       </section>
 
-      <!-- CATÁLOGO GERAL (EM 1 LINHA, SEM FRASE EXPLICATIVA) -->
+      <!-- CATÁLOGO GERAL (GRADE 3x3 CLEAN COM ZOOM) -->
       <section class="catalog-section" id="catalogo" aria-labelledby="catalog-title">
-        <div class="catalog-header-clean">
+        <div class="section-header-clean">
           <p class="eyebrow">um produto, muitos temas</p>
           <h2 id="catalog-title">Catálogo Completo</h2>
         </div>
         <div class="product-grid-three" id="product-grid"></div>
       </section>
 
-      <!-- ETAPAS -->
+      <!-- ETAPAS DE PRODUÇÃO -->
       <section class="steps-section">
-        <p class="eyebrow">simples assim</p>
-        <h2>Do seu jeito, do começo ao fim.</h2>
+        <p class="eyebrow" style="text-align: center;">simples assim</p>
+        <h2 style="text-align: center; margin-bottom: 20px;">Do seu jeito, do começo ao fim.</h2>
         <div class="steps-grid">
           <div class="step-card">
             <span class="step-num">01</span>
             <h3>Escolha seus itens</h3>
-            <p>Monte seu pedido com os modelos que combinam com sua festa (mínimo de R$ 40).</p>
+            <p>Monte seu pedido com os modelos que combinam com sua festa (pedido mínimo de R$ 40).</p>
           </div>
           <div class="step-card">
             <span class="step-num">02</span>
             <h3>Informe os detalhes</h3>
-            <p>Preencha tema, nome e idade para direcionar tudo pronto ao WhatsApp.</p>
+            <p>Preencha tema, nome e idade para direcionar tudo pronto para o nosso WhatsApp.</p>
           </div>
           <div class="step-card">
             <span class="step-num">03</span>
             <h3>Produção com carinho</h3>
-            <p>Alinhamos a arte e prazos com acabamento impecável.</p>
+            <p>Alinhamos a arte, prazos e confeccionamos cada mimo com acabamento perfeito.</p>
           </div>
         </div>
       </section>
 
-      <!-- HISTÓRIA -->
-      <section class="about-section" id="nossa-historia">
-        <div class="about-card">
-          <p class="eyebrow">como tudo começou</p>
-          <h2>Nossa História</h2>
-          <p class="about-lead">Uma papelaria afetiva criada para transformar celebrações em memórias inesquecíveis.</p>
-          <p>O <strong>Studio Raquel</strong> nasceu da união entre o carinho de uma mãe dedicada e o olhar detalhista e estratégico de uma administradora.</p>
-          <p>O que começou com criações manuais cheias de afeto expandiu-se com o desejo de levar encanto para as celebrações. Cada caixa, rótulo e lembrancinha é preparado com amor e acabamento perfeito.</p>
+      <!-- SEÇÃO NOSSA HISTÓRIA COM FUNDO DESTACADO E BANNER/LOGO ENQUADRADA -->
+      <section class="about-hero-section" id="nossa-historia">
+        <div class="about-container">
+          <div class="about-logo-frame">
+            <img src="assets/banner.png" alt="Studio Raquel Personalizados" />
+          </div>
+          <div class="about-text-content">
+            <span class="eyebrow">sobre nós</span>
+            <h2>Nossa História</h2>
+            <p class="about-lead">Artesanato afetivo criado para transformar celebrações em memórias para a vida toda.</p>
+            <p>O <strong>Studio Raquel</strong> nasceu da união entre a sensibilidade manual e o carinho materno com a organização e olhar detalhista.</p>
+            <p>Cada caixinha, convite, tag e lembrança é pensado exclusivamente para você, feito com amor, impressão de alta resolução e corte minucioso.</p>
+            <small class="about-hours">Horário de atendimento: Segunda a Sábado, das 09:00 às 18:00</small>
+          </div>
         </div>
       </section>
 
-      <!-- ORÇAMENTO -->
+      <!-- DÚVIDAS / ORÇAMENTO -->
       <section class="quote-section" id="duvidas">
         <div class="quote-box">
           <span class="quote-sparkle">✨</span>
@@ -105,31 +129,16 @@
           </a>
         </div>
       </section>
-
-      <!-- CONTATO -->
-      <section class="contact-section" id="onde-encontrar">
-        <p class="eyebrow" style="text-align: center;">fale com a gente</p>
-        <h2 style="text-align: center; margin-bottom: 20px;">Onde nos encontrar</h2>
-        <div class="contact-cards">
-          <a class="contact-item" href="https://wa.me/5521967693490" target="_blank" rel="noopener noreferrer">
-            <span class="c-icon">💬</span>
-            <div>
-              <strong>WhatsApp</strong>
-              <span>(21) 96769-3490</span>
-            </div>
-          </a>
-          <a class="contact-item" href="https://www.instagram.com/raquel.personalizadoss?stkn=eWVsYWs1N3RieGRh" target="_blank" rel="noopener noreferrer">
-            <span class="c-icon">📸</span>
-            <div>
-              <strong>Instagram</strong>
-              <span>@raquel.personalizadoss</span>
-            </div>
-          </a>
-        </div>
-      </section>
     </main>
 
-    <!-- MODAL DE VISUALIZAÇÃO GRANDE -->
+    <!-- BOTÃO FLUTUANTE DO WHATSAPP (FIXO NO CANTO INFERIOR) -->
+    <a class="whatsapp-float-btn" href="https://wa.me/5521967693490?text=Ol%C3%A1%2C%20Raquel!%20Vim%20pelo%20site%20e%20gostaria%20de%20tirar%20uma%20d%C3%BAvida." target="_blank" rel="noopener noreferrer" aria-label="Fale conosco no WhatsApp">
+      <svg viewBox="0 0 32 32" width="34" height="34" fill="currentColor">
+        <path d="M16.01 2C8.28 2 2 8.28 2 16.01c0 2.66.75 5.16 2.05 7.3L2 30l6.87-2c2.08 1.19 4.48 1.83 7.14 1.83 7.73 0 14.01-6.28 14.01-14.01C30.02 8.28 23.74 2 16.01 2zm0 25.64c-2.34 0-4.52-.64-6.39-1.75l-.46-.27-4.47 1.3 1.33-4.34-.3-.48a11.58 11.58 0 0 1-1.72-6.09c0-6.42 5.22-11.64 11.64-11.64s11.64 5.22 11.64 11.64-5.22 11.64-11.64 11.64zm6.38-8.73c-.35-.18-2.07-1.02-2.39-1.14-.32-.12-.55-.18-.78.18-.23.35-.9 1.14-1.1 1.37-.2.23-.41.26-.76.09-.35-.18-1.48-.55-2.82-1.75-1.04-.93-1.74-2.08-1.95-2.43-.2-.35-.02-.54.15-.71.16-.16.35-.41.53-.61.18-.2.23-.35.35-.58.12-.23.06-.44-.03-.61-.09-.18-.78-1.88-1.07-2.58-.28-.68-.57-.59-.78-.6h-.67c-.23 0-.61.09-.93.44-.32.35-1.22 1.2-1.22 2.92s1.25 3.39 1.42 3.62c.18.23 2.46 3.76 5.96 5.27.83.36 1.48.58 1.99.74.84.27 1.6.23 2.2.14.67-.1 2.07-.85 2.36-1.66.29-.82.29-1.52.2-1.66-.08-.14-.32-.23-.67-.41z"/>
+      </svg>
+    </a>
+
+    <!-- MODAL DE VISUALIZAÇÃO GRANDE (TELA CHEIA) -->
     <div class="modal-overlay" id="product-modal-backdrop" hidden></div>
     <div class="product-fullscreen-modal" id="product-modal" aria-hidden="true" role="dialog">
       <button class="modal-close" id="close-product-modal" type="button" aria-label="Fechar">✕</button>
@@ -143,7 +152,7 @@
       <small>© <span id="current-year"></span> Studio Raquel. Todos os direitos reservados.</small>
     </footer>
 
-    <!-- CARRINHO -->
+    <!-- CARRINHO LATERAL -->
     <div class="cart-backdrop" id="cart-backdrop" hidden></div>
     <aside class="cart-drawer" id="cart-drawer" aria-labelledby="cart-title" aria-hidden="true">
       <div class="cart-header">
@@ -173,6 +182,6 @@
     </aside>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="script.js?v=30"></script>
+    <script src="script.js?v=40"></script>
   </body>
 </html>
