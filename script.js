@@ -2,6 +2,7 @@
 const WHATSAPP_NUMBER = "5521967693490";
 const MINIMUM_ORDER = 40;
 const SHIPPING_FEE = 5.00;
+
 const products = [
   {
     id: "caixa-milk",
@@ -266,7 +267,7 @@ const products = [
   {
     id: "foto-polaroid",
     name: "Foto Polaroid",
-    description: "Fotos no estilo Polaroid para guardar memórias afetivas da sua festa ou evento.",
+    description: "Fotos no estilo Polaroid para guardar memórias afetivas da sua festa.",
     price: 2.5,
     tag: "R$ 2,50",
     variants: [
@@ -278,7 +279,7 @@ const products = [
   {
     id: "foto-ima",
     name: "Foto com Ímã",
-    description: "Lembrancinha fotográfica imantada, perfeita para decorar a geladeira com muito afeto.",
+    description: "Lembrancinha fotográfica imantada para decorar a geladeira.",
     price: 4,
     tag: "R$ 4,00",
     variants: [
@@ -290,163 +291,160 @@ const products = [
 ];
 
 const money = value => Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const state = { cart: {}, featuredIndex: 0 };
+const state = { cart: {}, featuredIndex: 0, currentModalProduct: null, currentModalVariantIndex: 0 };
 const $ = selector => document.querySelector(selector);
 const productById = id => products.find(product => product.id === id);
 
-function productCard(product, suffix) {
+/* RENDERIZAR CARD COMPACTO (ENFILEIRADO) */
+function createProductCard(product) {
   const variant = product.variants[0];
-  const totalVariants = product.variants.length;
-  const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : " da alça";
-  const options = product.options ? `
-    <div class="option-wrap">
-      <label class="variant-label" for="option-${product.id}-${suffix}">Opção${optionLabel}</label>
-      <select class="variant-select" id="option-${product.id}-${suffix}" data-option-select>
-        ${product.options.map(option => `<option value="${option}">${option}${product.optionPrices ? (product.optionPrices[option] ? ` (+ ${money(product.optionPrices[option])})` : " (sem adicional)") : ""}</option>`).join("")}
-      </select>
-    </div>` : "";
-
-  const carouselControls = totalVariants > 1 ? `
-    <button class="card-arrow prev" type="button" data-nav-variant="-1" aria-label="Foto anterior">‹</button>
-    <button class="card-arrow next" type="button" data-nav-variant="1" aria-label="Próxima foto">›</button>
-    <div class="carousel-dots">
-      ${product.variants.map((_, i) => `<span class="dot ${i === 0 ? "active" : ""}"></span>`).join("")}
-    </div>
-  ` : "";
-
   return `
-    <article class="product-card" data-product-id="${product.id}" data-current-index="0">
-      <div class="product-image" data-open-modal="${product.id}">
-        <span class="product-tag">${product.tag}</span>
-        <span class="open-modal-hint">Ver detalhes 🔍</span>
-        <img class="product-photo" src="${variant.image}" alt="${product.name}" loading="lazy">
-        ${carouselControls}
+    <article class="product-card-item" data-open-product="${product.id}">
+      <div class="card-thumb-wrap">
+        <span class="card-badge-price">${product.tag}</span>
+        <img src="${variant.image}" alt="${product.name}" loading="lazy">
       </div>
-      <div class="product-body">
-        <h3 class="product-title" data-open-modal="${product.id}">${product.name}</h3>
-        <p class="product-desc">${product.description}</p>
-        <span class="illustrative-note">Passe para ver modelos · Personalize como quiser</span>
-        ${options}
-        <div class="theme-field-wrap">
-          <label class="variant-label" for="theme-${product.id}-${suffix}">Qual tema você deseja?</label>
-          <input class="theme-input" id="theme-${product.id}-${suffix}" data-theme-input type="text" required placeholder="Ex.: Patrulha Canina, safari...">
-        </div>
-        
-        <div class="product-meta">
-          <span class="price">${money(product.price)}</span>
-          <div class="card-action-group">
-            <span class="btn-quick-view" data-open-modal="${product.id}">Ver opções</span>
-            <div class="card-qty-control">
-              <button type="button" class="btn-qty-mini" data-card-qty-btn="-1" aria-label="Diminuir">−</button>
-              <input type="number" class="card-qty-input" data-card-qty-input value="1" min="1" max="999" aria-label="Quantidade">
-              <button type="button" class="btn-qty-mini" data-card-qty-btn="1" aria-label="Aumentar">+</button>
-            </div>
-            <button class="add-button" type="button" data-add="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">
-              +
-            </button>
-          </div>
-        </div>
+      <div class="card-info">
+        <strong class="card-name">${product.name}</strong>
+        <span class="card-price">${money(product.price)}</span>
+        <span class="card-click-hint">Toque para ver</span>
       </div>
     </article>
   `;
 }
 
-function renderProducts() {
+function renderSite() {
   const grid = $("#product-grid");
   const feat = $("#featured-products");
-  if (grid) grid.innerHTML = products.map((item, index) => productCard(item, `catalog-${index}`)).join("");
-  if (feat) feat.innerHTML = products.map((item, index) => productCard(item, `featured-${index}`)).join("");
-  setupSwipeHandlers();
+  if (grid) grid.innerHTML = products.map(createProductCard).join("");
+  if (feat) feat.innerHTML = products.map(createProductCard).join("");
 }
 
-function openProductModal(productId) {
+/* MODAL DE TELA CHEIA (VISUALIZAÇÃO COMPLETA) */
+function openModal(productId) {
   const product = productById(productId);
   if (!product) return;
 
+  state.currentModalProduct = product;
+  state.currentModalVariantIndex = 0;
+
   const totalVariants = product.variants.length;
   const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : " da alça";
-  const options = product.options ? `
-    <div class="option-wrap" style="margin-bottom: 8px;">
-      <label class="variant-label" for="modal-option-${product.id}">Opção${optionLabel}</label>
-      <select class="variant-select" id="modal-option-${product.id}" data-modal-option>
-        ${product.options.map(option => `<option value="${option}">${option}${product.optionPrices ? (product.optionPrices[option] ? ` (+ ${money(product.optionPrices[option])})` : " (sem adicional)") : ""}</option>`).join("")}
+  const optionsHtml = product.options ? `
+    <div class="modal-form-group">
+      <label for="modal-option-select">Opção${optionLabel}</label>
+      <select id="modal-option-select">
+        ${product.options.map(opt => `<option value="${opt}">${opt}${product.optionPrices?.[opt] ? ` (+ ${money(product.optionPrices[opt])})` : " (sem adicional)"}</option>`).join("")}
       </select>
     </div>` : "";
 
-  const carouselControls = totalVariants > 1 ? `
-    <button class="card-arrow prev" type="button" data-modal-nav="-1" aria-label="Foto anterior">‹</button>
-    <button class="card-arrow next" type="button" data-modal-nav="1" aria-label="Próxima foto">›</button>
-    <div class="carousel-dots">
-      ${product.variants.map((_, i) => `<span class="dot ${i === 0 ? "active" : ""}"></span>`).join("")}
-    </div>
-  ` : "";
+  const arrowsHtml = totalVariants > 1 ? `
+    <button class="gallery-arrow prev" type="button" data-modal-arrow="-1">‹</button>
+    <button class="gallery-arrow next" type="button" data-modal-arrow="1">›</button>
+    <div class="gallery-dots">
+      ${product.variants.map((_, i) => `<span class="g-dot ${i === 0 ? 'active' : ''}"></span>`).join("")}
+    </div>` : "";
 
   $("#product-modal-body").innerHTML = `
-    <div class="modal-image-area" id="modal-image-area" data-modal-product-id="${product.id}" data-current-index="0">
-      <span class="product-tag">${product.tag}</span>
-      <img class="modal-photo" id="modal-photo" src="${product.variants[0].image}" alt="${product.name}">
-      ${carouselControls}
+    <div class="modal-gallery" id="modal-gallery-area">
+      <img id="modal-main-img" src="${product.variants[0].image}" alt="${product.name}">
+      ${arrowsHtml}
     </div>
-    <div class="modal-details">
-      <div>
-        <h2 style="font-size: 1.35rem; color: var(--deep-cherry);">${product.name}</h2>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">${product.description}</p>
-        <span class="illustrative-note" style="margin-top: 6px;">👉 Deslize com o dedo ou use as setas para ver os modelos</span>
+    <div class="modal-info-body">
+      <h2 class="modal-product-title">${product.name}</h2>
+      <p class="modal-product-desc">${product.description}</p>
+      
+      ${optionsHtml}
+
+      <div class="modal-form-group">
+        <label for="modal-theme-input">Qual tema você deseja?</label>
+        <input type="text" id="modal-theme-input" placeholder="Ex.: Patrulha Canina, Toy Story, Safari..." required>
       </div>
 
-      ${options}
-
-      <div class="theme-field-wrap">
-        <label class="variant-label" for="modal-theme-${product.id}">Qual tema você deseja na sua festa?</label>
-        <input class="theme-input" id="modal-theme-${product.id}" data-modal-theme type="text" placeholder="Ex.: Patrulha Canina, princesas, safari...">
-      </div>
-
-      <div class="product-meta" style="border-top: 1px dashed var(--line); padding-top: 12px; margin-top: 6px;">
-        <span class="price" style="font-size: 1.4rem;">${money(product.price)}</span>
-        <div class="card-action-group">
-          <div class="card-qty-control" style="height: 38px;">
-            <button type="button" class="btn-qty-mini" data-modal-qty-btn="-1" style="width: 34px;">−</button>
-            <input type="number" class="card-qty-input" id="modal-qty-input" value="1" min="1" max="999" style="width: 38px;">
-            <button type="button" class="btn-qty-mini" data-modal-qty-btn="1" style="width: 34px;">+</button>
-          </div>
-          <button class="button-primary" id="btn-modal-add" type="button" data-modal-add-id="${product.id}" style="padding: 10px 20px; font-size: 0.95rem;">
-            Adicionar ao Carrinho
-          </button>
+      <div class="modal-action-bar">
+        <span class="price" id="modal-item-price">${money(product.price)}</span>
+        <div class="qty-picker">
+          <button type="button" data-modal-qty="-1">−</button>
+          <input type="number" id="modal-qty-val" value="1" min="1" readonly>
+          <button type="button" data-modal-qty="1">+</button>
         </div>
+        <button class="btn-add-cart-large" id="modal-confirm-add" type="button">
+          Adicionar
+        </button>
       </div>
     </div>
   `;
 
   $("#product-modal").classList.add("is-open");
   $("#product-modal-backdrop").hidden = false;
-  setupModalSwipe();
+  setupGallerySwipe();
 }
 
-function closeProductModal() {
-  const modal = $("#product-modal");
-  const backdrop = $("#product-modal-backdrop");
-  if (modal) modal.classList.remove("is-open");
-  if (backdrop) backdrop.hidden = true;
+function closeModal() {
+  $("#product-modal").classList.remove("is-open");
+  $("#product-modal-backdrop").hidden = true;
+  state.currentModalProduct = null;
 }
 
-function updateModalImage(nextIndex) {
-  const area = $("#modal-image-area");
-  if (!area) return;
-  const productId = area.dataset.modalProductId;
-  const product = productById(productId);
-  area.dataset.currentIndex = nextIndex;
+function updateModalGalleryImage(index) {
+  const product = state.currentModalProduct;
+  if (!product) return;
+  state.currentModalVariantIndex = index;
+  const img = $("#modal-main-img");
+  if (img) img.src = product.variants[index].image;
 
-  const currentVariant = product.variants[nextIndex];
-  const photo = $("#modal-photo");
-  photo.src = currentVariant.image;
-  photo.alt = `${product.name} - foto ${nextIndex + 1}`;
-
-  const dots = area.querySelectorAll(".carousel-dots .dot");
-  dots.forEach((dot, idx) => {
-    dot.classList.toggle("active", idx === nextIndex);
+  document.querySelectorAll(".gallery-dots .g-dot").forEach((dot, idx) => {
+    dot.classList.toggle("active", idx === index);
   });
 }
 
+function setupGallerySwipe() {
+  const area = $("#modal-gallery-area");
+  if (!area) return;
+  let startX = 0;
+  area.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
+  area.addEventListener("touchend", e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 35) {
+      const product = state.currentModalProduct;
+      const total = product.variants.length;
+      let next = diff > 0 ? (state.currentModalVariantIndex + 1) % total : (state.currentModalVariantIndex - 1 + total) % total;
+      updateModalGalleryImage(next);
+    }
+  }, { passive: true });
+}
+
+/* CARROSSEL INFINITO CONTÍNUO */
+let autoPlayTimer = null;
+function startInfiniteCarousel() {
+  stopInfiniteCarousel();
+  autoPlayTimer = setInterval(() => {
+    moveCarousel(1);
+  }, 3000);
+}
+
+function stopInfiniteCarousel() {
+  if (autoPlayTimer) clearInterval(autoPlayTimer);
+}
+
+function moveCarousel(direction) {
+  const track = $("#featured-products");
+  if (!track) return;
+  const cards = track.querySelectorAll(".product-card-item");
+  if (!cards.length) return;
+
+  const cardWidth = cards[0].offsetWidth + 14;
+  const visible = Math.floor(track.parentElement.offsetWidth / cardWidth) || 1;
+  const max = Math.max(0, cards.length - visible);
+
+  state.featuredIndex += direction;
+  if (state.featuredIndex > max) state.featuredIndex = 0;
+  if (state.featuredIndex < 0) state.featuredIndex = max;
+
+  track.style.transform = `translateX(-${state.featuredIndex * cardWidth}px)`;
+}
+
+/* CARRINHO E WHATSAPP */
 function cartItems() {
   return Object.entries(state.cart).map(([key, quantity]) => {
     const [productId, variantIndexStr, option, encodedTheme] = key.split(":");
@@ -470,70 +468,38 @@ function renderCart() {
   const grandTotal = subtotal + shippingFee;
   const missing = Math.max(0, MINIMUM_ORDER - subtotal);
 
-  const cartCountEl = $("#cart-count");
-  if (cartCountEl) {
-    cartCountEl.textContent = cartCount();
-    cartCountEl.setAttribute("aria-label", `${cartCount()} itens`);
-  }
+  $("#cart-count").textContent = cartCount();
+  const fields = $("#cart-checkout-fields");
+  if (fields) fields.style.display = items.length ? "block" : "none";
 
-  const fieldsSection = $("#cart-checkout-fields");
-  if (fieldsSection) fieldsSection.style.display = items.length ? "block" : "none";
-
-  const cartContent = $("#cart-content");
-  if (cartContent) {
-    cartContent.innerHTML = items.length ? items.map(item => `
-      <div class="cart-item">
-        <img src="${item.variant.image}" alt="">
-        <div class="cart-item-info">
-          <strong>${item.product.name}</strong>
-          <small>Tema: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
-          Unitário: ${money(itemUnitTotal(item))} · <strong>Subtotal: ${money(itemTotal(item))}</strong></small>
-          <div class="quantity-control">
-            <button type="button" data-decrease="${item.key}">−</button>
-            <span>${item.quantity}</span>
-            <button type="button" data-increase="${item.key}">+</button>
-          </div>
+  $("#cart-content").innerHTML = items.length ? items.map(item => `
+    <div class="cart-item">
+      <img src="${item.variant.image}" alt="">
+      <div class="cart-item-info">
+        <strong>${item.product.name}</strong>
+        <small>Tema: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
+        Unit.: ${money(itemUnitTotal(item))} · Subtotal: ${money(itemTotal(item))}</small>
+        <div style="display:flex; gap:6px; margin-top:4px;">
+          <button type="button" data-decrease="${item.key}" style="width:24px; height:24px;">−</button>
+          <span>${item.quantity}</span>
+          <button type="button" data-increase="${item.key}" style="width:24px; height:24px;">+</button>
         </div>
-        <button class="remove-item" type="button" data-remove="${item.key}">×</button>
       </div>
-    `).join("") : `<div class="empty-cart" style="text-align: center; color: var(--muted); padding: 30px 0;"><strong>Seu carrinho está vazio</strong><p>Escolha um modelo para começar seu pedido.</p></div>`;
-  }
+      <button type="button" data-remove="${item.key}" style="background:none; border:none; color:#999; font-size:18px;">✕</button>
+    </div>
+  `).join("") : `<div style="text-align:center; color:var(--muted); padding:30px 0;">Seu carrinho está vazio</div>`;
 
-  const cartFooter = $("#cart-footer");
-  if (cartFooter) {
-    cartFooter.innerHTML = `
-      <div class="subtotal-row"><span>Subtotal dos Itens:</span><span>${money(subtotal)}</span></div>
-      ${shippingFee > 0 ? `<div class="fee-row" style="color: var(--deep-cherry);"><span>Taxa de Entrega:</span><span>+ ${money(shippingFee)}</span></div>` : ""}
-      <div class="total-final-row"><span>Total com Entrega:</span><span>${money(grandTotal)}</span></div>
-      <div class="minimum-order ${missing ? "is-pending" : "is-met"}">
-        ${missing ? `Faltam ${money(missing)} em produtos para atingir o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido — preencha os dados e envie!"}
-      </div>
-      <button class="whatsapp-button" id="send-whatsapp" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
-        ${subtotal >= MINIMUM_ORDER ? "Finalizar pelo WhatsApp ↗" : `Adicione mais ${money(missing)}`}
-      </button>
-    `;
-  }
-}
-
-function changeQuantity(key, delta) { 
-  state.cart[key] = (state.cart[key] || 0) + delta; 
-  if (state.cart[key] <= 0) delete state.cart[key]; 
-  renderCart(); 
-}
-
-function updateCardImage(card, nextIndex) {
-  const itemProduct = productById(card.dataset.productId);
-  card.dataset.currentIndex = nextIndex;
-  
-  const currentVariant = itemProduct.variants[nextIndex];
-  const image = card.querySelector(".product-photo");
-  image.src = currentVariant.image; 
-  image.alt = `${itemProduct.name} - foto ${nextIndex + 1}`;
-
-  const dots = card.querySelectorAll(".carousel-dots .dot");
-  dots.forEach((dot, idx) => {
-    dot.classList.toggle("active", idx === nextIndex);
-  });
+  $("#cart-footer").innerHTML = `
+    <div class="subtotal-row"><span>Itens:</span><span>${money(subtotal)}</span></div>
+    ${shippingFee > 0 ? `<div class="fee-row" style="color:var(--deep-cherry);"><span>Entrega:</span><span>+ ${money(shippingFee)}</span></div>` : ""}
+    <div class="total-final-row"><span>Total:</span><span>${money(grandTotal)}</span></div>
+    <div class="minimum-order ${missing ? 'is-pending' : 'is-met'}">
+      ${missing ? `Faltam ${money(missing)} para o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido!"}
+    </div>
+    <button class="whatsapp-button" id="send-whatsapp" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
+      ${subtotal >= MINIMUM_ORDER ? "Finalizar no WhatsApp ↗" : `Adicione mais ${money(missing)}`}
+    </button>
+  `;
 }
 
 function showToast(message) { 
@@ -541,314 +507,128 @@ function showToast(message) {
   if (!toast) return;
   toast.textContent = message; 
   toast.classList.add("show"); 
-  setTimeout(() => toast.classList.remove("show"), 2500); 
+  setTimeout(() => toast.classList.remove("show"), 2200); 
 }
 
-function toggleCart(open) { 
-  const drawer = $("#cart-drawer"); 
+function toggleCart(open) {
+  const drawer = $("#cart-drawer");
   if (!drawer) return;
-  drawer.classList.toggle("is-open", open); 
-  drawer.setAttribute("aria-hidden", String(!open)); 
-  $("#open-cart").setAttribute("aria-expanded", String(open)); 
-  $("#cart-backdrop").hidden = !open; 
+  drawer.classList.toggle("is-open", open);
+  $("#cart-backdrop").hidden = !open;
 }
 
 function sendToWhatsApp() {
   const items = cartItems();
   const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
+  if (subtotal < MINIMUM_ORDER) return;
 
-  if (subtotal < MINIMUM_ORDER) {
-    showToast(`O pedido mínimo em itens é ${money(MINIMUM_ORDER)}`);
-    return;
-  }
+  const theme = $("#order-theme").value.trim();
+  const child = $("#order-child").value.trim();
+  const shipping = $("#order-shipping").value;
 
-  const themeInput = $("#order-theme");
-  const childInput = $("#order-child");
-  const shippingSelect = $("#order-shipping");
-
-  const orderTheme = themeInput ? themeInput.value.trim() : "";
-  const orderChild = childInput ? childInput.value.trim() : "";
-  const orderShipping = shippingSelect ? shippingSelect.value : "Recolha no local";
-
-  if (!orderTheme) {
-    if (themeInput) themeInput.focus();
-    showToast("Por favor, preencha o tema da festa no carrinho!");
-    return;
-  }
-
-  if (!orderChild) {
-    if (childInput) childInput.focus();
-    showToast("Por favor, preencha o nome e idade no carrinho!");
-    return;
-  }
-
-  const shippingFee = orderShipping === "Envio" ? SHIPPING_FEE : 0;
-  const grandTotal = subtotal + shippingFee;
+  if (!theme) { $("#order-theme").focus(); showToast("Preencha o tema da festa no carrinho!"); return; }
+  if (!child) { $("#order-child").focus(); showToast("Preencha o nome/idade no carrinho!"); return; }
 
   const lines = items.map(item => `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""} - ${money(itemTotal(item))}`);
-  const deliveryText = orderShipping === "Envio" ? `Envio (+ ${money(SHIPPING_FEE)} de taxa de entrega)` : `Recolha no local (Sem taxa)`;
+  const delivery = shipping === "Envio" ? `Envio (+ ${money(SHIPPING_FEE)})` : `Recolha no local (Sem taxa)`;
+  const total = subtotal + (shipping === "Envio" ? SHIPPING_FEE : 0);
 
-  const message = `Olá, Raquel! Vim pelo site e montei o meu pedido com os seguintes itens:
+  const message = `Olá, Raquel! Vim pelo site e montei o seguinte pedido:
 
 🛍️ Itens Escolhidos:
 ${lines.join("\n")}
 
-💰 Subtotal Estimado: ${money(grandTotal)}
+💰 Total Estimado: ${money(total)}
 
-🎈 Dados da Personalização:
-• Tema da festa: ${orderTheme}
-• Nome e idade: ${orderChild}
-• Opção de entrega: ${deliveryText}
+🎈 Dados da Festa:
+• Tema: ${theme}
+• Nome/Idade: ${child}
+• Entrega: ${delivery}
 
-Gostaria de confirmar a disponibilidade da data e tirar algumas dúvidas para fechar o pedido! ✨`;
+Gostaria de confirmar a encomenda! ✨`;
 
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
 }
 
-function moveCarousel(direction) {
-  const track = $("#featured-products");
-  if (!track) return;
-  const cards = track.querySelectorAll(".product-card");
-  if (!cards.length) return;
-  const visible = window.innerWidth <= 600 ? 1 : window.innerWidth <= 800 ? 2 : 3;
-  const max = Math.max(0, cards.length - visible);
-  state.featuredIndex = Math.min(max, Math.max(0, state.featuredIndex + direction));
-  track.style.transform = `translateX(-${state.featuredIndex * (cards[0].offsetWidth + 20)}px)`;
-}
-
-function setupSwipeHandlers() {
-  const featuredTrack = $("#featured-products");
-  let startX = 0;
-
-  if (featuredTrack) {
-    featuredTrack.addEventListener("touchstart", e => {
-      startX = e.touches[0].clientX;
-    }, { passive: true });
-
-    featuredTrack.addEventListener("touchend", e => {
-      const endX = e.changedTouches[0].clientX;
-      const diff = startX - endX;
-      if (Math.abs(diff) > 40) {
-        if (diff > 0) moveCarousel(1);
-        else moveCarousel(-1);
-      }
-    }, { passive: true });
-  }
-
-  document.querySelectorAll(".product-image").forEach(imgArea => {
-    let cardStartX = 0;
-    imgArea.addEventListener("touchstart", e => {
-      cardStartX = e.touches[0].clientX;
-    }, { passive: true });
-
-    imgArea.addEventListener("touchend", e => {
-      const cardEndX = e.changedTouches[0].clientX;
-      const diff = cardStartX - cardEndX;
-      if (Math.abs(diff) > 35) {
-        const card = imgArea.closest(".product-card");
-        const itemProduct = productById(card.dataset.productId);
-        const currentIndex = parseInt(card.dataset.currentIndex || "0", 10);
-        const totalVariants = itemProduct.variants.length;
-        let nextIndex = diff > 0 ? (currentIndex + 1) % totalVariants : (currentIndex - 1 + totalVariants) % totalVariants;
-        updateCardImage(card, nextIndex);
-      }
-    }, { passive: true });
-  });
-}
-
-function setupModalSwipe() {
-  const modalImgArea = $("#modal-image-area");
-  if (!modalImgArea) return;
-  let mStartX = 0;
-
-  modalImgArea.addEventListener("touchstart", e => {
-    mStartX = e.touches[0].clientX;
-  }, { passive: true });
-
-  modalImgArea.addEventListener("touchend", e => {
-    const mEndX = e.changedTouches[0].clientX;
-    const diff = mStartX - mEndX;
-    if (Math.abs(diff) > 35) {
-      const productId = modalImgArea.dataset.modalProductId;
-      const itemProduct = productById(productId);
-      const currentIndex = parseInt(modalImgArea.dataset.currentIndex || "0", 10);
-      const totalVariants = itemProduct.variants.length;
-      let nextIndex = diff > 0 ? (currentIndex + 1) % totalVariants : (currentIndex - 1 + totalVariants) % totalVariants;
-      updateModalImage(nextIndex);
-    }
-  }, { passive: true });
-}
-
-let autoPlayTimer = null;
-
-function startAutoPlay() {
-  stopAutoPlay();
-  autoPlayTimer = setInterval(() => {
-    const track = $("#featured-products");
-    if (!track) return;
-    const cards = track.querySelectorAll(".product-card");
-    if (!cards.length) return;
-    
-    const visible = window.innerWidth <= 600 ? 1 : window.innerWidth <= 800 ? 2 : 3;
-    const max = Math.max(0, cards.length - visible);
-
-    if (state.featuredIndex >= max) {
-      state.featuredIndex = 0;
-      track.style.transform = `translateX(0px)`;
-    } else {
-      moveCarousel(1);
-    }
-  }, 3500);
-}
-
-function stopAutoPlay() {
-  if (autoPlayTimer) {
-    clearInterval(autoPlayTimer);
-    autoPlayTimer = null;
-  }
-}
-
-const viewport = document.querySelector(".carousel-viewport");
-if (viewport) {
-  viewport.addEventListener("mouseenter", stopAutoPlay);
-  viewport.addEventListener("mouseleave", startAutoPlay);
-  viewport.addEventListener("touchstart", stopAutoPlay, { passive: true });
-  viewport.addEventListener("touchend", () => {
-    setTimeout(startAutoPlay, 2000);
-  }, { passive: true });
-}
-
-document.addEventListener("click", event => {
-  const openModalTrigger = event.target.closest("[data-open-modal]");
-  if (openModalTrigger && !event.target.closest(".card-arrow") && !event.target.closest(".add-button") && !event.target.closest(".card-qty-control")) {
-    const pId = openModalTrigger.dataset.openModal;
-    openProductModal(pId);
+/* EVENTOS */
+document.addEventListener("click", e => {
+  const cardTrigger = e.target.closest("[data-open-product]");
+  if (cardTrigger) {
+    openModal(cardTrigger.dataset.openProduct);
     return;
   }
 
-  if (event.target.id === "close-product-modal" || event.target.id === "product-modal-backdrop") {
-    closeProductModal();
+  if (e.target.id === "close-product-modal" || e.target.id === "product-modal-backdrop") {
+    closeModal();
     return;
   }
 
-  if (event.target.dataset.modalNav) {
-    const modalImgArea = $("#modal-image-area");
-    const delta = parseInt(event.target.dataset.modalNav, 10);
-    const itemProduct = productById(modalImgArea.dataset.modalProductId);
-    const currentIndex = parseInt(modalImgArea.dataset.currentIndex || "0", 10);
-    const totalVariants = itemProduct.variants.length;
-    let nextIndex = (currentIndex + delta + totalVariants) % totalVariants;
-    updateModalImage(nextIndex);
+  if (e.target.dataset.modalArrow) {
+    const delta = parseInt(e.target.dataset.modalArrow, 10);
+    const product = state.currentModalProduct;
+    const total = product.variants.length;
+    let next = (state.currentModalVariantIndex + delta + total) % total;
+    updateModalGalleryImage(next);
     return;
   }
 
-  if (event.target.dataset.modalQtyBtn) {
-    const input = $("#modal-qty-input");
-    let val = parseInt(input.value || "1", 10) + parseInt(event.target.dataset.modalQtyBtn, 10);
-    if (isNaN(val) || val < 1) val = 1;
+  if (e.target.dataset.modalQty) {
+    const input = $("#modal-qty-val");
+    let val = parseInt(input.value || "1", 10) + parseInt(e.target.dataset.modalQty, 10);
+    if (val < 1) val = 1;
     input.value = val;
     return;
   }
 
-  if (event.target.id === "btn-modal-add") {
-    const pId = event.target.dataset.modalAddId;
-    const itemProduct = productById(pId);
-    const modalArea = $("#modal-image-area");
-    const currentIndex = modalArea.dataset.currentIndex || "0";
-    const themeInput = $("#modal-theme-" + pId);
+  if (e.target.id === "modal-confirm-add") {
+    const product = state.currentModalProduct;
+    const themeInput = $("#modal-theme-input");
     const theme = themeInput ? themeInput.value.trim() : "";
-
     if (!theme) {
       themeInput.focus();
-      showToast("Informe o tema desejado para adicionar");
+      showToast("Informe o tema desejado!");
       return;
     }
 
-    const qty = parseInt($("#modal-qty-input").value || "1", 10);
-    const option = $("#modal-option-" + pId)?.value;
+    const qty = parseInt($("#modal-qty-val").value || "1", 10);
+    const option = $("#modal-option-select")?.value || "";
+    const key = `${product.id}:${state.currentModalVariantIndex}:${option}:${encodeURIComponent(theme)}`;
 
-    changeQuantity(`${itemProduct.id}:${currentIndex}:${option || ""}:${encodeURIComponent(theme)}`, qty);
-    showToast(`${qty}x ${itemProduct.name} adicionado(s)`);
-    closeProductModal();
+    state.cart[key] = (state.cart[key] || 0) + qty;
+    showToast(`${qty}x ${product.name} adicionado!`);
+    renderCart();
+    closeModal();
     return;
   }
 
-  if (event.target.dataset.cardQtyBtn) {
-    const card = event.target.closest(".product-card");
-    const qtyInput = card.querySelector("[data-card-qty-input]");
-    const delta = parseInt(event.target.dataset.cardQtyBtn, 10);
-    let val = parseInt(qtyInput.value || "1", 10) + delta;
-    if (isNaN(val) || val < 1) val = 1;
-    qtyInput.value = val;
-    return;
+  if (e.target.dataset.increase) { state.cart[e.target.dataset.increase] += 1; renderCart(); }
+  if (e.target.dataset.decrease) {
+    state.cart[e.target.dataset.decrease] -= 1;
+    if (state.cart[e.target.dataset.decrease] <= 0) delete state.cart[e.target.dataset.decrease];
+    renderCart();
   }
+  if (e.target.dataset.remove) { delete state.cart[e.target.dataset.remove]; renderCart(); }
 
-  if (event.target.dataset.navVariant) {
-    const card = event.target.closest(".product-card");
-    const itemProduct = productById(card.dataset.productId);
-    const currentIndex = parseInt(card.dataset.currentIndex || "0", 10);
-    const delta = parseInt(event.target.dataset.navVariant, 10);
-    const totalVariants = itemProduct.variants.length;
-    let nextIndex = (currentIndex + delta) % totalVariants;
-    if (nextIndex < 0) nextIndex = totalVariants - 1;
-    updateCardImage(card, nextIndex);
-    return;
-  }
-
-  if (event.target.dataset.add) {
-    const card = event.target.closest(".product-card");
-    const itemProduct = productById(event.target.dataset.add);
-    const currentIndex = card.dataset.currentIndex || "0";
-    const themeInput = card.querySelector("[data-theme-input]");
-    const theme = themeInput ? themeInput.value.trim() : "";
-    
-    if (!theme) {
-      if (window.innerWidth <= 600) {
-        openProductModal(itemProduct.id);
-        return;
-      }
-      themeInput.focus();
-      showToast("Informe o tema desejado para adicionar");
-      return;
-    }
-
-    const qtyInput = card.querySelector("[data-card-qty-input]");
-    let quantityToAdd = parseInt(qtyInput ? qtyInput.value : "1", 10);
-    if (isNaN(quantityToAdd) || quantityToAdd < 1) quantityToAdd = 1;
-
-    const option = card.querySelector("[data-option-select]")?.value;
-    changeQuantity(`${itemProduct.id}:${currentIndex}:${option || ""}:${encodeURIComponent(theme)}`, quantityToAdd);
-    showToast(`${quantityToAdd}x ${itemProduct.name} adicionado(s)`);
-    if (qtyInput) qtyInput.value = 1;
-    return;
-  }
-
-  if (event.target.dataset.increase) changeQuantity(event.target.dataset.increase, 1);
-  if (event.target.dataset.decrease) changeQuantity(event.target.dataset.decrease, -1);
-  if (event.target.dataset.remove) { delete state.cart[event.target.dataset.remove]; renderCart(); }
-  if (event.target.id === "open-cart") toggleCart(true);
-  if (event.target.id === "close-cart") toggleCart(false);
-  if (event.target.id === "send-whatsapp") sendToWhatsApp();
-  if (event.target.id === "carousel-next") moveCarousel(1);
-  if (event.target.id === "carousel-prev") moveCarousel(-1);
+  if (e.target.id === "open-cart") toggleCart(true);
+  if (e.target.id === "close-cart" || e.target.id === "cart-backdrop") toggleCart(false);
+  if (e.target.id === "send-whatsapp") sendToWhatsApp();
+  if (e.target.id === "carousel-next") moveCarousel(1);
+  if (e.target.id === "carousel-prev") moveCarousel(-1);
 });
 
-document.addEventListener("change", event => {
-  if (event.target.matches("[data-card-qty-input]")) {
-    let val = parseInt(event.target.value, 10);
-    if (isNaN(val) || val < 1) event.target.value = 1;
-  }
-  if (event.target.id === "order-shipping") renderCart();
+document.addEventListener("change", e => {
+  if (e.target.id === "order-shipping") renderCart();
 });
 
-const backdrop = $("#cart-backdrop");
-if (backdrop) backdrop.addEventListener("click", () => toggleCart(false));
-const modalBackdrop = $("#product-modal-backdrop");
-if (modalBackdrop) modalBackdrop.addEventListener("click", closeProductModal);
+const container = document.getElementById("carousel-container");
+if (container) {
+  container.addEventListener("mouseenter", stopInfiniteCarousel);
+  container.addEventListener("mouseleave", startInfiniteCarousel);
+  container.addEventListener("touchstart", stopInfiniteCarousel, { passive: true });
+  container.addEventListener("touchend", () => setTimeout(startInfiniteCarousel, 2000), { passive: true });
+}
 
-renderProducts(); 
-renderCart(); 
-startAutoPlay();
-const currentYearEl = $("#current-year");
-if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
-window.addEventListener("resize", () => { state.featuredIndex = 0; moveCarousel(0); });
+renderSite();
+renderCart();
+startInfiniteCarousel();
+$("#current-year").textContent = new Date().getFullYear();
