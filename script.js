@@ -295,7 +295,6 @@ const state = { cart: {}, featuredIndex: 0, currentModalProduct: null, currentMo
 const $ = selector => document.querySelector(selector);
 const productById = id => products.find(product => product.id === id);
 
-/* RENDERIZAR CARD COMPACTO (ENFILEIRADO) */
 function createProductCard(product) {
   const variant = product.variants[0];
   return `
@@ -307,7 +306,6 @@ function createProductCard(product) {
       <div class="card-info">
         <strong class="card-name">${product.name}</strong>
         <span class="card-price">${money(product.price)}</span>
-        <span class="card-click-hint">Toque para ver</span>
       </div>
     </article>
   `;
@@ -320,7 +318,6 @@ function renderSite() {
   if (feat) feat.innerHTML = products.map(createProductCard).join("");
 }
 
-/* MODAL DE TELA CHEIA (VISUALIZAÇÃO COMPLETA) */
 function openModal(productId) {
   const product = productById(productId);
   if (!product) return;
@@ -414,13 +411,14 @@ function setupGallerySwipe() {
   }, { passive: true });
 }
 
-/* CARROSSEL INFINITO CONTÍNUO */
+/* CARROSSEL INFINITO COM ARRASTO POR DEDO (TOUCH SWIPE) */
 let autoPlayTimer = null;
+
 function startInfiniteCarousel() {
   stopInfiniteCarousel();
   autoPlayTimer = setInterval(() => {
     moveCarousel(1);
-  }, 3000);
+  }, 3500);
 }
 
 function stopInfiniteCarousel() {
@@ -441,7 +439,57 @@ function moveCarousel(direction) {
   if (state.featuredIndex > max) state.featuredIndex = 0;
   if (state.featuredIndex < 0) state.featuredIndex = max;
 
+  track.style.transition = "transform 0.35s ease";
   track.style.transform = `translateX(-${state.featuredIndex * cardWidth}px)`;
+}
+
+/* CONFIGURAÇÃO DO SWIPE POR TOQUE NO CARROSSEL */
+function setupCarouselSwipe() {
+  const container = document.getElementById("carousel-container");
+  const track = document.getElementById("featured-products");
+  if (!container || !track) return;
+
+  let startX = 0;
+  let currentX = 0;
+  let isSwiping = false;
+
+  container.addEventListener("touchstart", e => {
+    stopInfiniteCarousel();
+    startX = e.touches[0].clientX;
+    currentX = startX;
+    isSwiping = true;
+    track.style.transition = "none";
+  }, { passive: true });
+
+  container.addEventListener("touchmove", e => {
+    if (!isSwiping) return;
+    currentX = e.touches[0].clientX;
+    const cards = track.querySelectorAll(".product-card-item");
+    if (!cards.length) return;
+    const cardWidth = cards[0].offsetWidth + 14;
+    const currentOffset = -state.featuredIndex * cardWidth;
+    const delta = currentX - startX;
+    track.style.transform = `translateX(${currentOffset + delta}px)`;
+  }, { passive: true });
+
+  container.addEventListener("touchend", () => {
+    if (!isSwiping) return;
+    isSwiping = false;
+    const diff = startX - currentX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        moveCarousel(1);
+      } else {
+        moveCarousel(-1);
+      }
+    } else {
+      moveCarousel(0);
+    }
+    setTimeout(startInfiniteCarousel, 2500);
+  }, { passive: true });
+
+  container.addEventListener("mouseenter", stopInfiniteCarousel);
+  container.addEventListener("mouseleave", startInfiniteCarousel);
 }
 
 /* CARRINHO E WHATSAPP */
@@ -620,15 +668,8 @@ document.addEventListener("change", e => {
   if (e.target.id === "order-shipping") renderCart();
 });
 
-const container = document.getElementById("carousel-container");
-if (container) {
-  container.addEventListener("mouseenter", stopInfiniteCarousel);
-  container.addEventListener("mouseleave", startInfiniteCarousel);
-  container.addEventListener("touchstart", stopInfiniteCarousel, { passive: true });
-  container.addEventListener("touchend", () => setTimeout(startInfiniteCarousel, 2000), { passive: true });
-}
-
 renderSite();
 renderCart();
 startInfiniteCarousel();
+setupCarouselSwipe();
 $("#current-year").textContent = new Date().getFullYear();
