@@ -181,6 +181,18 @@ const products = [
     ]
   },
   {
+    id: "adesivo-cofrinho",
+    name: "Adesivo para Cofrinho personalizado",
+    description: "Rótulo adesivo fotográfico em alta resolução para cofrinhos de papelão ou plástico (tamanho padrão 20x9,5cm).",
+    price: 3,
+    tag: "R$ 3,00",
+    variants: [
+      { id: "minions", name: "Minions / Beatriz", image: "assets/adesivo-cofrinho-minions.png" },
+      { id: "safari", name: "Safari / Arthur", image: "assets/adesivo-cofrinho-safari.png" },
+      { id: "patrulha-canina", name: "Patrulha Canina", image: "assets/adesivo-cofrinho-patrulha-canina.png" }
+    ]
+  },
+  {
     id: "etiqueta-escolar-cartela",
     name: "Etiqueta escolar — cartela",
     description: "Cartela de etiquetas para identificar materiais, cadernos e pertences.",
@@ -214,6 +226,24 @@ const products = [
       { id: "looney-tunes", name: "Looney Tunes / Henrique", image: "assets/plaquinha-mesa-looney-tunes.png" },
       { id: "homem-aranha", name: "Homem-Aranha / Eduardo", image: "assets/plaquinha-mesa-homem-aranha.png" },
       { id: "fazendinha", name: "Fazendinha", image: "assets/plaquinha-mesa-fazendinha.png" }
+    ]
+  },
+  {
+    id: "bolinha-natal-personalizada",
+    name: "Bolinha de Natal Personalizada",
+    description: "Bolinha acrílica transparente (7cm) personalizada com foto em papel fotográfico, laço vermelho com dourado e acabamento interno com efeito neve.",
+    price: 9.9,
+    tag: "R$ 9,90",
+    options: ["1 Unidade (Avulsa)", "Kit com 4 Unidades", "Kit com 6 Unidades", "Kit com 10 Unidades"],
+    optionPrices: {
+      "1 Unidade (Avulsa)": 0,
+      "Kit com 4 Unidades": 28.1,
+      "Kit com 6 Unidades": 40.1,
+      "Kit com 10 Unidades": 65.1
+    },
+    variants: [
+      { id: "kit-arvore", name: "Kit Árvore de Natal", image: "assets/bolinha-natal-kit.png" },
+      { id: "cenario-presente", name: "Cenário Natalino", image: "assets/bolinha-natal-cenario.png" }
     ]
   },
   {
@@ -260,7 +290,7 @@ const products = [
     tag: "R$ 7,00",
     variants: [
       { id: "bolofofos", name: "Bolofofos / Arthur", image: "assets/sacolinha-p-bolofofos.png" },
-      { id: "safari", name: "Safari / Emanuel", image: "assets/sacolinha-p-safari.png" },
+      { id: "safari", name: "Safari / Emanuel", image: "assets/safari-p-safari.png" },
       { id: "bluey", name: "Bluey / Valentin", image: "assets/sacolinha-p-bluey.png" }
     ]
   },
@@ -412,7 +442,7 @@ function openModal(productId) {
   state.currentModalVariantIndex = 0;
 
   const totalVariants = product.variants.length;
-  const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : " da alça";
+  const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : product.id === "bolinha-natal-personalizada" ? " da quantidade" : " da alça";
   const optionsHtml = product.options ? `
     <div class="modal-form-group">
       <label for="modal-option-select">Opção${optionLabel}</label>
@@ -440,8 +470,8 @@ function openModal(productId) {
       ${optionsHtml}
 
       <div class="modal-form-group">
-        <label for="modal-theme-input">Qual tema você deseja?</label>
-        <input type="text" id="modal-theme-input" placeholder="Ex.: Patrulha Canina, Toy Story, Safari..." required>
+        <label for="modal-theme-input">${product.id === "bolinha-natal-personalizada" ? "Fotos ou nomes para a bolinha:" : "Qual tema você deseja?"}</label>
+        <input type="text" id="modal-theme-input" placeholder="${product.id === "bolinha-natal-personalizada" ? "Ex.: Enviarei as fotos no WhatsApp / Foto da Família" : "Ex.: Minions, Safari, Patrulha Canina..."}" required>
       </div>
 
       <div class="modal-action-bar">
@@ -607,7 +637,7 @@ function renderCart() {
       <img src="${item.variant.image}" alt="">
       <div class="cart-item-info">
         <strong>${item.product.name}</strong>
-        <small>Tema: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
+        <small>Tema/Detalhes: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
         Unit.: ${money(itemUnitTotal(item))} · Subtotal: ${money(itemTotal(item))}</small>
         <div style="display:flex; gap:6px; margin-top:4px;">
           <button type="button" data-decrease="${item.key}" style="width:24px; height:24px;">−</button>
@@ -648,23 +678,26 @@ function toggleCart(open) {
 }
 
 function sendToWhatsApp() {
-  // 1. URL do seu Google Apps Script 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjp-xpuBGplJ0hCBHDfDzMdAALymWIeBK6DZQDP6VAsVUnZRMAo6tkzfRQoYMiMYM8EA/exec";
 
-  // 2. Monta os dados dos itens que estão no carrinho (state.cart ou similar)
-  // Caso seu state tenha os itens, formatamos como texto:
-  const itensCarrinho = (state.cart || []).map(item => `${item.qty || 1}x ${item.title || item.name}`).join(", ");
+  const items = cartItems();
+  const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
+  const shippingMode = $("#order-shipping") ? $("#order-shipping").value : "Recolha no local";
+  const shippingFee = shippingMode === "Envio" ? SHIPPING_FEE : 0;
+  const grandTotal = subtotal + shippingFee;
+
+  const itensFormatados = items.map(item => 
+    `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""} - Tema/Detalhe: ${item.theme}`
+  ).join("\n");
 
   const dadosParaPlanilha = {
     origem: "Site (Carrinho)",
-    itens: itensCarrinho || "Itens do carrinho",
-    // Se você tiver campos no modal/carrinho para nome e tema, pode pegar aqui:
-    // nome: document.getElementById("nome-cliente")?.value || "",
-    // dataFesta: document.getElementById("data-festa")?.value || ""
+    itens: itensFormatados || "Nenhum item informado",
+    total: money(grandTotal),
+    entrega: shippingMode
   };
 
-  // 3. Envia para a planilha em segundo plano (não trava o clique)
-if (GOOGLE_SCRIPT_URL) {
+  if (GOOGLE_SCRIPT_URL) {
     fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
@@ -673,10 +706,14 @@ if (GOOGLE_SCRIPT_URL) {
     }).catch(err => console.error("Erro ao salvar na planilha:", err));
   }
 
-  // 4. Sua mensagem original do WhatsApp que já estava aí:
   const message = `Olá, Raquel! Vim pelo site e montei o seguinte pedido:
 
-${itensCarrinho ? itensCarrinho + "\n\n" : ""}Gostaria de confirmar a encomenda! ✨`;
+${itensFormatados}
+
+*Entrega:* ${shippingMode}
+*Total:* ${money(grandTotal)}
+
+Gostaria de confirmar a encomenda! ✨`;
 
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
 }
@@ -717,7 +754,7 @@ document.addEventListener("click", e => {
     const theme = themeInput ? themeInput.value.trim() : "";
     if (!theme) {
       themeInput.focus();
-      showToast("Informe o tema desejado!");
+      showToast(product.id === "bolinha-natal-personalizada" ? "Informe os detalhes ou fotos!" : "Informe o tema desejado!");
       return;
     }
 
