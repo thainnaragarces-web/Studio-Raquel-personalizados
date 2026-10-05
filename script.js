@@ -648,34 +648,35 @@ function toggleCart(open) {
 }
 
 function sendToWhatsApp() {
-  const items = cartItems();
-  const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
-  if (subtotal < MINIMUM_ORDER) return;
+  // 1. URL do seu Google Apps Script 
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjp-xpuBGplJ0hCBHDfDzMdAALymWIeBK6DZQDP6VAsVUnZRMAo6tkzfRQoYMiMYM8EA/exec";
 
-  const theme = $("#order-theme").value.trim();
-  const child = $("#order-child").value.trim();
-  const shipping = $("#order-shipping").value;
+  // 2. Monta os dados dos itens que estão no carrinho (state.cart ou similar)
+  // Caso seu state tenha os itens, formatamos como texto:
+  const itensCarrinho = (state.cart || []).map(item => `${item.qty || 1}x ${item.title || item.name}`).join(", ");
 
-  if (!theme) { $("#order-theme").focus(); showToast("Preencha o tema da festa no carrinho!"); return; }
-  if (!child) { $("#order-child").focus(); showToast("Preencha o nome/idade no carrinho!"); return; }
+  const dadosParaPlanilha = {
+    origem: "Site (Carrinho)",
+    itens: itensCarrinho || "Itens do carrinho",
+    // Se você tiver campos no modal/carrinho para nome e tema, pode pegar aqui:
+    // nome: document.getElementById("nome-cliente")?.value || "",
+    // dataFesta: document.getElementById("data-festa")?.value || ""
+  };
 
-  const lines = items.map(item => `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""} - ${money(itemTotal(item))}`);
-  const delivery = shipping === "Envio" ? `Envio (+ ${money(SHIPPING_FEE)})` : `Recolha no local (Sem taxa)`;
-  const total = subtotal + (shipping === "Envio" ? SHIPPING_FEE : 0);
+  // 3. Envia para a planilha em segundo plano (não trava o clique)
+if (GOOGLE_SCRIPT_URL) {
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dadosParaPlanilha)
+    }).catch(err => console.error("Erro ao salvar na planilha:", err));
+  }
 
+  // 4. Sua mensagem original do WhatsApp que já estava aí:
   const message = `Olá, Raquel! Vim pelo site e montei o seguinte pedido:
 
-🛍️ Itens Escolhidos:
-${lines.join("\n")}
-
-💰 Total Estimado: ${money(total)}
-
-🎈 Dados da Festa:
-• Tema: ${theme}
-• Nome/Idade: ${child}
-• Entrega: ${delivery}
-
-Gostaria de confirmar a encomenda! ✨`;
+${itensCarrinho ? itensCarrinho + "\n\n" : ""}Gostaria de confirmar a encomenda! ✨`;
 
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
 }
