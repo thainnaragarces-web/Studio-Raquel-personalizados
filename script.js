@@ -704,12 +704,12 @@ function renderCart() {
           </div>
 
           <div class="cart-field" style="margin-bottom: 8px;">
-            <label style="font-size: 12px; font-weight: bold;">Tema do pedido/Festa*</label>
+            <label style="font-size: 12px; font-weight: bold;">Tema escolhido *</label>
             <input type="text" id="cust-theme" placeholder="Ex: Patrulha Canina, Minnie Rosa..." required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
           </div>
 
           <div class="cart-field" style="margin-bottom: 8px;">
-            <label style="font-size: 12px; font-weight: bold;">Nome e Idade do Aniversariante *</label>
+            <label style="font-size: 12px; font-weight: bold;">Nome e/ou Idade do Aniversariante *</label>
             <input type="text" id="cust-child" placeholder="Ex: Gabi, 2 anos" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
           </div>
 
@@ -729,7 +729,7 @@ function renderCart() {
           <div class="cart-field" style="margin-bottom: 8px;">
             <label style="font-size: 12px; font-weight: bold;">Forma de Pagamento *</label>
             <select id="pay-method" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-              <option value="Pix (Mercado Pago)">⚡ Pix (Mercado Pago)</option>
+              <option value="Pix (Mercado Pago)">⚡ Pix </option>
               <option value="Cartão de Crédito (até 12x)">💳 Cartão de Crédito (até 12x)</option>
               <option value="Finalizar no WhatsApp">💬 Combinar/Finalizar no WhatsApp</option>
             </select>
