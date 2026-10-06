@@ -2,6 +2,10 @@
 const WHATSAPP_NUMBER = "5521967693490";
 const MINIMUM_ORDER = 40;
 const SHIPPING_FEE = 5.00;
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjp-xpuBGplJ0hCBHDfDzMdAALymWIeBK6DZQDP6VAsVUnZRMAo6tkzfRQoYMiMYM8EA/exec";
+
+// Link do Mercado Pago
+const MERCADO_PAGO_LINK = "https://link.mercadopago.com.br/raquelpersonalizadoo"; 
 
 const products = [
   {
@@ -320,12 +324,20 @@ const products = [
   }
 ];
 
+// LISTA ESPECÍFICA PARA A SEÇÃO MAIS VENDIDOS (Apenas 4 itens)
+const FEATURED_IDS = [
+  "bolinha-natal-personalizada",
+  "sacolinha-personalizada-p",
+  "sacolinha-personalizada-g",
+  "convite-interativo"
+];
+
 const money = value => Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const state = { cart: {}, featuredIndex: 0, currentModalProduct: null, currentModalVariantIndex: 0 };
 const $ = selector => document.querySelector(selector);
 const productById = id => products.find(product => product.id === id);
 
-/* CRIAÇÃO DO CARD LIMPO (PREÇO ÚNICO + ZOOM) */
+/* CRIAÇÃO DO CARD */
 function createProductCard(product) {
   const variant = product.variants[0];
   return `
@@ -344,11 +356,16 @@ function createProductCard(product) {
 function renderSite() {
   const grid = $("#product-grid");
   const feat = $("#featured-products");
+  
   if (grid) grid.innerHTML = products.map(createProductCard).join("");
-  if (feat) feat.innerHTML = products.map(createProductCard).join("");
+  
+  if (feat) {
+    const featuredList = products.filter(p => FEATURED_IDS.includes(p.id));
+    feat.innerHTML = featuredList.map(createProductCard).join("");
+  }
 }
 
-/* INTERSECTION OBSERVER PARA O EFEITO DE SUBIDA (REVEAL) */
+/* INTERSECTION OBSERVER PARA O EFEITO DE SUBIDA */
 function setupScrollReveal() {
   const section = document.querySelector(".scroll-reveal-section");
   if (!section) return;
@@ -433,7 +450,7 @@ function filterProducts(searchTerm) {
   }
 }
 
-/* MODAL DE TELA CHEIA */
+/* MODAL DO PRODUTO (SEM PERGUNTA DE TEMA POR ITEM + BOTÃO COMPARTILHAR) */
 function openModal(productId) {
   const product = productById(productId);
   if (!product) return;
@@ -443,6 +460,7 @@ function openModal(productId) {
 
   const totalVariants = product.variants.length;
   const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : product.id === "bolinha-natal-personalizada" ? " da quantidade" : " da alça";
+  
   const optionsHtml = product.options ? `
     <div class="modal-form-group">
       <label for="modal-option-select">Opção${optionLabel}</label>
@@ -469,11 +487,6 @@ function openModal(productId) {
       
       ${optionsHtml}
 
-      <div class="modal-form-group">
-        <label for="modal-theme-input">${product.id === "bolinha-natal-personalizada" ? "Fotos ou nomes para a bolinha:" : "Qual tema você deseja?"}</label>
-        <input type="text" id="modal-theme-input" placeholder="${product.id === "bolinha-natal-personalizada" ? "Ex.: Enviarei as fotos no WhatsApp / Foto da Família" : "Ex.: Minions, Safari, Patrulha Canina..."}" required>
-      </div>
-
       <div class="modal-action-bar">
         <span class="price" id="modal-item-price">${money(product.price)}</span>
         <div class="qty-picker">
@@ -483,6 +496,12 @@ function openModal(productId) {
         </div>
         <button class="btn-add-cart-large" id="modal-confirm-add" type="button">
           Adicionar
+        </button>
+      </div>
+
+      <div class="share-product-container" style="margin-top: 15px; text-align: center;">
+        <button type="button" id="share-product-btn" class="btn-share-product" style="background: transparent; border: 1px solid #128c7e; color: #128c7e; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          📲 Compartilhar este produto no WhatsApp
         </button>
       </div>
     </div>
@@ -525,6 +544,25 @@ function setupGallerySwipe() {
       updateModalGalleryImage(next);
     }
   }, { passive: true });
+}
+
+/* COMPARTILHAMENTO DE PRODUTO ISOLADO */
+function shareProductWhatsApp() {
+  const product = state.currentModalProduct;
+  if (!product) return;
+
+  const productUrl = `${window.location.origin}${window.location.pathname}?produto=${product.id}`;
+  const shareText = `Olha esse item incrível do Studio Raquel Personalizados ✨:\n\n*${product.name}*\n${product.description}\n\nConfira aqui: ${productUrl}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: product.name,
+      text: shareText,
+      url: productUrl
+    }).catch(() => {});
+  } else {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+  }
 }
 
 /* CARROSSEL DE MAIS VENDIDOS */
@@ -604,14 +642,14 @@ function setupCarouselSwipe() {
   container.addEventListener("mouseleave", startInfiniteCarousel);
 }
 
-/* CARRINHO E WHATSAPP */
+/* CARRINHO, CHECKOUT E MERCADO PAGO */
 function cartItems() {
   return Object.entries(state.cart).map(([key, quantity]) => {
-    const [productId, variantIndexStr, option, encodedTheme] = key.split(":");
+    const [productId, variantIndexStr, option] = key.split(":");
     const itemProduct = productById(productId);
     const variantIndex = parseInt(variantIndexStr || "0", 10);
     const currentVariant = itemProduct && itemProduct.variants[variantIndex] ? itemProduct.variants[variantIndex] : itemProduct?.variants[0];
-    return { key, product: itemProduct, variant: currentVariant, option, theme: decodeURIComponent(encodedTheme || ""), quantity };
+    return { key, product: itemProduct, variant: currentVariant, option, quantity };
   }).filter(item => item.product && item.variant);
 }
 
@@ -623,21 +661,19 @@ function itemTotal(item) { return itemUnitTotal(item) * item.quantity; }
 function renderCart() {
   const items = cartItems();
   const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
-  const shippingMode = $("#order-shipping") ? $("#order-shipping").value : "Recolha no local";
+  const shippingMode = $("#order-shipping") ? $("#order-shipping").value : "Retirada no Local";
   const shippingFee = shippingMode === "Envio" ? SHIPPING_FEE : 0;
   const grandTotal = subtotal + shippingFee;
   const missing = Math.max(0, MINIMUM_ORDER - subtotal);
 
   $("#cart-count").textContent = cartCount();
-  const fields = $("#cart-checkout-fields");
-  if (fields) fields.style.display = items.length ? "block" : "none";
 
   $("#cart-content").innerHTML = items.length ? items.map(item => `
     <div class="cart-item">
       <img src="${item.variant.image}" alt="">
       <div class="cart-item-info">
         <strong>${item.product.name}</strong>
-        <small>Tema/Detalhes: <strong>${item.theme}</strong>${item.option ? ` · ${item.option}` : ""}<br>
+        <small>${item.option ? `Opção: ${item.option}<br>` : ""}
         Unit.: ${money(itemUnitTotal(item))} · Subtotal: ${money(itemTotal(item))}</small>
         <div style="display:flex; gap:6px; margin-top:4px;">
           <button type="button" data-decrease="${item.key}" style="width:24px; height:24px;">−</button>
@@ -649,15 +685,84 @@ function renderCart() {
     </div>
   `).join("") : `<div style="text-align:center; color:var(--muted); padding:30px 0;">Seu carrinho está vazio</div>`;
 
+  const checkoutFieldsContainer = $("#cart-checkout-fields");
+  if (checkoutFieldsContainer) {
+    if (items.length > 0) {
+      checkoutFieldsContainer.style.display = "block";
+      checkoutFieldsContainer.innerHTML = `
+        <div class="checkout-form-box" style="margin-top: 15px; padding: 12px; background: #fdf8f8; border-radius: 8px; border: 1px solid #f2e2e2;">
+          <h3 style="font-size: 14px; margin-bottom: 10px; color: #8a2be2;">Dados para Personalização & Envio</h3>
+          
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">Seu Nome Completo *</label>
+            <input type="text" id="cust-name" placeholder="Ex: Gabriela Souza" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </div>
+
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">WhatsApp / Telefone *</label>
+            <input type="tel" id="cust-phone" placeholder="Ex: 21988887777" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </div>
+
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">Tema da Festa *</label>
+            <input type="text" id="cust-theme" placeholder="Ex: Patrulha Canina, Minnie Rosa..." required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </div>
+
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">Nome e Idade do Aniversariante *</label>
+            <input type="text" id="cust-child" placeholder="Ex: Gabi, 2 anos" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </div>
+
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">Data da Festa / Evento *</label>
+            <input type="date" id="cust-event-date" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </div>
+
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">Forma de Entrega *</label>
+            <select id="order-shipping" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+              <option value="Retirada no Local">Retirada no Local (Grátis)</option>
+              <option value="Envio">Envio / Correios (+ R$ 5,00)</option>
+            </select>
+          </div>
+
+          <div class="cart-field" style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: bold;">Forma de Pagamento *</label>
+            <select id="pay-method" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+              <option value="Pix (Mercado Pago)">⚡ Pix (Mercado Pago)</option>
+              <option value="Cartão de Crédito (até 12x)">💳 Cartão de Crédito (até 12x)</option>
+              <option value="Finalizar no WhatsApp">💬 Combinar/Finalizar no WhatsApp</option>
+            </select>
+          </div>
+
+          <div class="checkout-summary-card" style="margin-top: 12px; padding: 10px; background: #fff; border-radius: 6px; border: 1px dashed #b81b37;">
+            <div style="display:flex; justify-content:space-between; font-size:12px;">
+              <span>Subtotal dos Itens:</span>
+              <span>${money(subtotal)}</span>
+            </div>
+            ${shippingFee > 0 ? `
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:#b81b37;">
+              <span>Taxa de Entrega:</span>
+              <span>+ ${money(shippingFee)}</span>
+            </div>` : ''}
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color:#b81b37; margin-top:4px; border-top:1px solid #eee; padding-top:4px;">
+              <span>TOTAL DO PEDIDO:</span>
+              <span>${money(grandTotal)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      checkoutFieldsContainer.style.display = "none";
+    }
+  }
+
   $("#cart-footer").innerHTML = `
-    <div class="subtotal-row"><span>Itens:</span><span>${money(subtotal)}</span></div>
-    ${shippingFee > 0 ? `<div class="fee-row" style="color:var(--deep-cherry);"><span>Entrega:</span><span>+ ${money(shippingFee)}</span></div>` : ""}
-    <div class="total-final-row"><span>Total:</span><span>${money(grandTotal)}</span></div>
-    <div class="minimum-order ${missing ? 'is-pending' : 'is-met'}">
+    <div class="minimum-order ${missing ? 'is-pending' : 'is-met'}" style="text-align:center; margin-bottom:8px;">
       ${missing ? `Faltam ${money(missing)} para o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido!"}
     </div>
-    <button class="whatsapp-button" id="send-whatsapp" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
-      ${subtotal >= MINIMUM_ORDER ? "Finalizar no WhatsApp ↗" : `Adicione mais ${money(missing)}`}
+    <button class="whatsapp-button" id="process-checkout-btn" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
+      ${subtotal >= MINIMUM_ORDER ? `PAGAR / FINALIZAR PEDIDO (${money(grandTotal)})` : `Adicione mais ${money(missing)}`}
     </button>
   `;
 }
@@ -677,24 +782,42 @@ function toggleCart(open) {
   $("#cart-backdrop").hidden = !open;
 }
 
-function sendToWhatsApp() {
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjp-xpuBGplJ0hCBHDfDzMdAALymWIeBK6DZQDP6VAsVUnZRMAo6tkzfRQoYMiMYM8EA/exec";
+/* PROCESSAMENTO DO CHECKOUT (PLANILHA + DIRECIONAMENTO) */
+function processCheckout() {
+  const custName = $("#cust-name")?.value.trim();
+  const custPhone = $("#cust-phone")?.value.trim();
+  const custTheme = $("#cust-theme")?.value.trim();
+  const custChild = $("#cust-child")?.value.trim();
+  const custDate = $("#cust-event-date")?.value;
+  const shippingMode = $("#order-shipping")?.value || "Retirada no Local";
+  const payMethod = $("#pay-method")?.value || "Finalizar no WhatsApp";
+
+  if (!custName || !custPhone || !custTheme || !custChild || !custDate) {
+    showToast("Por favor, preencha todos os campos do checkout!");
+    return;
+  }
 
   const items = cartItems();
   const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
-  const shippingMode = $("#order-shipping") ? $("#order-shipping").value : "Recolha no local";
   const shippingFee = shippingMode === "Envio" ? SHIPPING_FEE : 0;
   const grandTotal = subtotal + shippingFee;
 
   const itensFormatados = items.map(item => 
-    `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""} - Tema/Detalhe: ${item.theme}`
+    `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""}`
   ).join("\n");
 
   const dadosParaPlanilha = {
     origem: "Site (Carrinho)",
-    itens: itensFormatados || "Nenhum item informado",
-    total: money(grandTotal),
-    entrega: shippingMode
+    nome: custName,
+    whatsapp: custPhone,
+    dataEvento: custDate,
+    produtos: itensFormatados || "Nenhum item informado",
+    quantidadeItens: cartCount(),
+    tema: custTheme,
+    nomeIdade: custChild,
+    formaEntrega: shippingMode,
+    formaPagamento: payMethod,
+    total: money(grandTotal)
   };
 
   if (GOOGLE_SCRIPT_URL) {
@@ -706,16 +829,34 @@ function sendToWhatsApp() {
     }).catch(err => console.error("Erro ao salvar na planilha:", err));
   }
 
-  const message = `Olá, Raquel! Vim pelo site e montei o seguinte pedido:
+  const message = `Olá, Raquel! Fiz um pedido pelo site:
 
+*Cliente:* ${custName}
+*WhatsApp:* ${custPhone}
+*Aniversariante:* ${custChild}
+*Tema da Festa:* ${custTheme}
+*Data do Evento:* ${custDate}
+
+*Itens do Pedido:*
 ${itensFormatados}
 
-*Entrega:* ${shippingMode}
+*Forma de Entrega:* ${shippingMode}
+*Forma de Pagamento:* ${payMethod}
 *Total:* ${money(grandTotal)}
 
-Gostaria de confirmar a encomenda! ✨`;
+Gostaria de confirmar a encomenda e andamento! ✨`;
 
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+  showToast("Pedido enviado com sucesso!");
+
+  // Redireciona para o Mercado Pago se a opção for de pagamento online
+  if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
+    window.open(MERCADO_PAGO_LINK, "_blank");
+  }
+
+  // Redireciona também para o WhatsApp com os dados
+  setTimeout(() => {
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+  }, 800);
 }
 
 /* EVENTOS DE CLIQUE */
@@ -750,22 +891,19 @@ document.addEventListener("click", e => {
 
   if (e.target.id === "modal-confirm-add") {
     const product = state.currentModalProduct;
-    const themeInput = $("#modal-theme-input");
-    const theme = themeInput ? themeInput.value.trim() : "";
-    if (!theme) {
-      themeInput.focus();
-      showToast(product.id === "bolinha-natal-personalizada" ? "Informe os detalhes ou fotos!" : "Informe o tema desejado!");
-      return;
-    }
-
     const qty = parseInt($("#modal-qty-val").value || "1", 10);
     const option = $("#modal-option-select")?.value || "";
-    const key = `${product.id}:${state.currentModalVariantIndex}:${option}:${encodeURIComponent(theme)}`;
+    const key = `${product.id}:${state.currentModalVariantIndex}:${option}`;
 
     state.cart[key] = (state.cart[key] || 0) + qty;
     showToast(`${qty}x ${product.name} adicionado!`);
     renderCart();
     closeModal();
+    return;
+  }
+
+  if (e.target.id === "share-product-btn") {
+    shareProductWhatsApp();
     return;
   }
 
@@ -779,14 +917,14 @@ document.addEventListener("click", e => {
 
   if (e.target.id === "open-cart") toggleCart(true);
   if (e.target.id === "close-cart" || e.target.id === "cart-backdrop") toggleCart(false);
-  if (e.target.id === "send-whatsapp") sendToWhatsApp();
+  if (e.target.id === "process-checkout-btn") processCheckout();
 });
 
 document.addEventListener("change", e => {
   if (e.target.id === "order-shipping") renderCart();
 });
 
-/* INICIALIZAÇÃO */
+/* INICIALIZAÇÃO DA PÁGINA */
 renderSite();
 renderCart();
 startInfiniteCarousel();
@@ -794,3 +932,9 @@ setupCarouselSwipe();
 setupScrollReveal();
 setupSearch();
 $("#current-year").textContent = new Date().getFullYear();
+
+const urlParams = new URLSearchParams(window.location.search);
+const directProduct = urlParams.get("produto");
+if (directProduct && productById(directProduct)) {
+  openModal(directProduct);
+}
