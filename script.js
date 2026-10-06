@@ -2,7 +2,7 @@
 const WHATSAPP_NUMBER = "5521967693490";
 const MINIMUM_ORDER = 40;
 const SHIPPING_FEE = 5.00;
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjp-xpuBGplJ0hCBHDfDzMdAALymWIeBK6DZQDP6VAsVUnZRMAo6tkzfRQoYMiMYM8EA/exec";
+const GOOGLE_SCRIPT_URL = "http://20.151.4.141:5678/webhook/studio-raquel-pedido";
 
 // Link do Mercado Pago
 const MERCADO_PAGO_LINK = "https://link.mercadopago.com.br/raquelpersonalizadoo"; 
