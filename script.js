@@ -704,7 +704,7 @@ function renderCart() {
           </div>
 
           <div class="cart-field" style="margin-bottom: 8px;">
-            <label style="font-size: 12px; font-weight: bold;">Tema da Festa *</label>
+            <label style="font-size: 12px; font-weight: bold;">Tema do pedido/Festa*</label>
             <input type="text" id="cust-theme" placeholder="Ex: Patrulha Canina, Minnie Rosa..." required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
           </div>
 
@@ -714,7 +714,7 @@ function renderCart() {
           </div>
 
           <div class="cart-field" style="margin-bottom: 8px;">
-            <label style="font-size: 12px; font-weight: bold;">Data da Festa / Evento *</label>
+            <label style="font-size: 12px; font-weight: bold;">Data do Pedido/Festa/ Evento *</label>
             <input type="date" id="cust-event-date" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
           </div>
 
