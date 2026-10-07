@@ -9,6 +9,64 @@ const MERCADO_PAGO_LINK = "https://link.mercadopago.com.br/raquelpersonalizadoo"
 
 const products = [
   {
+    id: "caneca-acrilica-350ml",
+    name: "Caneca Acrílica 350ml Rosqueável",
+    description: "Caneca acrílica rosqueável personalizada no tema da sua festa.",
+    price: 9.90,
+    tag: "A partir de R$ 7,90",
+    minQuantity: 20,
+    priceTiers: [
+      { min: 50, price: 7.90 },
+      { min: 30, price: 8.90 },
+      { min: 20, price: 9.90 }
+    ],
+    presetKits: [20, 30, 50],
+    variants: [
+      { id: "fazendinha-pedro", name: "Fazendinha do Pedro", image: "assets/caneca-acrilica-350ml-rosqueavel-fazendinha-do-pedro.png" },
+      { id: "para-colorir", name: "Para Colorir", image: "assets/caneca-acrilica-350ml-rosqueavel-para-colorir.png" },
+      { id: "tabela-cores", name: "Tabela de Cores", image: "assets/caneca-acrilica-350ml-rosqueavel-tabela-de-cores.png" },
+      { id: "medidas", name: "Medidas / Dimensões", image: "assets/caneca-acrilica-350ml-rosqueavel-medidas-dimensoes.png" }
+    ]
+  },
+  {
+    id: "copo-long-drink-350ml",
+    name: "Copo Long Drink 350ml",
+    description: "Copo Long Drink personalizado DTF UV em alta resolução.",
+    price: 7.50,
+    tag: "A partir de R$ 5,50",
+    minQuantity: 20,
+    priceTiers: [
+      { min: 100, price: 5.50 },
+      { min: 50, price: 6.50 },
+      { min: 20, price: 7.50 }
+    ],
+    presetKits: [20, 50, 100],
+    variants: [
+      { id: "maria-clara", name: "Maria Clara 13 anos", image: "assets/copo-long-drink-350ml-dtf-uv-maria-clara-13-anos.png" },
+      { id: "boteco-vagner", name: "Boteco do Vagner", image: "assets/copo-long-drink-350ml-dtf-uv-boteco-do-vagner.png" },
+      { id: "minnie-mario", name: "Minnie / Kalzone / Mario", image: "assets/copo-long-drink-350ml-dtf-uv-minnie-kalzone-mario.png" }
+    ]
+  },
+  {
+    id: "copo-twister-300ml",
+    name: "Copo Twister 300ml",
+    description: "Copo Twister personalizado com tampa e canudo.",
+    price: 8.00,
+    tag: "A partir de R$ 6,00",
+    minQuantity: 20,
+    priceTiers: [
+      { min: 100, price: 6.00 },
+      { min: 50, price: 7.00 },
+      { min: 20, price: 8.00 }
+    ],
+    presetKits: [20, 50, 100],
+    variants: [
+      { id: "baby-looney-levi", name: "Baby Looney Tunes / Levi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-levi.png" },
+      { id: "baby-looney-davi", name: "Baby Looney Tunes / Davi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-davi.png" },
+      { id: "baby-looney-mariah", name: "Baby Looney Tunes / Mariah", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-mariah.png" }
+    ]
+  },
+  {
     id: "caixa-milk",
     name: "Caixa Milk personalizada",
     description: "Lembrancinha montada com seu nome, cores e tema favorito.",
@@ -326,16 +384,28 @@ const products = [
 
 // LISTA ESPECÍFICA PARA A SEÇÃO MAIS VENDIDOS (Apenas 4 itens)
 const FEATURED_IDS = [
-  "bolinha-natal-personalizada",
-  "sacolinha-personalizada-p",
-  "sacolinha-personalizada-g",
-  "convite-interativo"
+  "caneca-acrilica-350ml",
+  "copo-long-drink-350ml",
+  "copo-twister-300ml",
+  "sacolinha-personalizada-p"
 ];
 
 const money = value => Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const state = { cart: {}, featuredIndex: 0, currentModalProduct: null, currentModalVariantIndex: 0 };
+const state = { cart: {}, featuredIndex: 0, currentModalProduct: null, currentModalVariantIndex: 0, currentModalSelectedQty: 1 };
 const $ = selector => document.querySelector(selector);
 const productById = id => products.find(product => product.id === id);
+
+// FUNÇÃO PARA CALCULAR O PREÇO UNITÁRIO CONFORME A QUANTIDADE
+function getUnitPrice(product, qty) {
+  if (product.priceTiers && product.priceTiers.length > 0) {
+    for (const tier of product.priceTiers) {
+      if (qty >= tier.min) {
+        return tier.price;
+      }
+    }
+  }
+  return product.price;
+}
 
 /* CRIAÇÃO DO CARD */
 function createProductCard(product) {
@@ -347,7 +417,7 @@ function createProductCard(product) {
       </div>
       <div class="card-details-row">
         <span class="card-title-lbl">${product.name}</span>
-        <span class="card-price-badge">${money(product.price)}</span>
+        <span class="card-price-badge">${product.tag || money(product.price)}</span>
       </div>
     </article>
   `;
@@ -450,13 +520,14 @@ function filterProducts(searchTerm) {
   }
 }
 
-/* MODAL DO PRODUTO (SEM PERGUNTA DE TEMA POR ITEM + BOTÃO COMPARTILHAR) */
+/* MODAL DO PRODUTO COM SELETOR TIPO MERCADO LIVRE */
 function openModal(productId) {
   const product = productById(productId);
   if (!product) return;
 
   state.currentModalProduct = product;
   state.currentModalVariantIndex = 0;
+  state.currentModalSelectedQty = product.minQuantity || 1;
 
   const totalVariants = product.variants.length;
   const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : product.id === "bolinha-natal-personalizada" ? " da quantidade" : " da alça";
@@ -476,6 +547,58 @@ function openModal(productId) {
       ${product.variants.map((_, i) => `<span class="g-dot ${i === 0 ? 'active' : ''}"></span>`).join("")}
     </div>` : "";
 
+  // SELETOR DE QUANTIDADE
+  let qtySelectorHtml = "";
+  if (product.priceTiers && product.priceTiers.length > 0) {
+    const minQtd = product.minQuantity || 20;
+    const maxPreset = product.presetKits ? Math.max(...product.presetKits) : 50;
+
+    let dropdownItems = "";
+    if (product.presetKits) {
+      product.presetKits.forEach(kitQtd => {
+        const uPrice = getUnitPrice(product, kitQtd);
+        dropdownItems += `<div class="qty-dropdown-item" data-select-qty="${kitQtd}">${kitQtd} unidades <small style="color:#666; font-size:11px;">(${money(uPrice)} un.)</small></div>`;
+      });
+    }
+    dropdownItems += `<div class="qty-dropdown-item custom-trigger" id="trigger-custom-qty">Mais de ${maxPreset} unidades</div>`;
+
+    qtySelectorHtml = `
+      <div class="qty-picker-container" style="margin: 15px 0;">
+        <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Quantidade (Pedido mínimo: ${minQtd} un.):</label>
+        
+        <div class="custom-qty-dropdown" style="position: relative; width: 100%;">
+          <button type="button" id="qty-dropdown-btn" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #fff; text-align: left; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+            <span id="qty-btn-label">${state.currentModalSelectedQty} unidades</span>
+            <span style="font-size: 10px; color: #666;">▼</span>
+          </button>
+
+          <div id="qty-dropdown-menu" class="qty-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; margin-top: 4px; padding: 6px 0;">
+            ${dropdownItems}
+            
+            <div id="custom-qty-box" style="display: none; padding: 10px; border-top: 1px solid #eee; background: #f9f9f9;">
+              <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">Digite a quantidade desejada:</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="number" id="input-custom-qty-val" min="${minQtd}" value="${state.currentModalSelectedQty}" style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="button" id="btn-apply-custom-qty" style="background: #8a2be2; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Aplicar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    qtySelectorHtml = `
+      <div class="qty-picker" style="display:inline-flex; align-items:center; border:1px solid #ccc; border-radius:6px; overflow:hidden;">
+        <button type="button" data-modal-qty="-1" style="padding:6px 12px; border:none; background:#eee;">−</button>
+        <input type="number" id="modal-qty-val" value="1" min="1" readonly style="width:40px; text-align:center; border:none;">
+        <button type="button" data-modal-qty="1" style="padding:6px 12px; border:none; background:#eee;">+</button>
+      </div>
+    `;
+  }
+
+  const initialUnitPrice = getUnitPrice(product, state.currentModalSelectedQty);
+  const initialTotal = initialUnitPrice * state.currentModalSelectedQty;
+
   $("#product-modal-body").innerHTML = `
     <div class="modal-gallery" id="modal-gallery-area">
       <img id="modal-main-img" src="${product.variants[0].image}" alt="${product.name}">
@@ -486,15 +609,15 @@ function openModal(productId) {
       <p class="modal-product-desc">${product.description}</p>
       
       ${optionsHtml}
+      ${qtySelectorHtml}
 
-      <div class="modal-action-bar">
-        <span class="price" id="modal-item-price">${money(product.price)}</span>
-        <div class="qty-picker">
-          <button type="button" data-modal-qty="-1">−</button>
-          <input type="number" id="modal-qty-val" value="1" min="1" readonly>
-          <button type="button" data-modal-qty="1">+</button>
+      <div class="modal-action-bar" style="margin-top: 15px;">
+        <div class="price-display-box">
+          <span class="price" id="modal-item-price" style="font-size: 18px; font-weight: bold; color: #8a2be2;">${money(initialTotal)}</span>
+          <small id="modal-unit-price-lbl" style="display: block; font-size: 11px; color: #666;">(${money(initialUnitPrice)} a unidade)</small>
         </div>
-        <button class="btn-add-cart-large" id="modal-confirm-add" type="button">
+
+        <button class="btn-add-cart-large" id="modal-confirm-add" type="button" style="padding: 10px 20px; background: #8a2be2; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
           Adicionar
         </button>
       </div>
@@ -510,6 +633,73 @@ function openModal(productId) {
   $("#product-modal").classList.add("is-open");
   $("#product-modal-backdrop").hidden = false;
   setupGallerySwipe();
+  setupDropdownEvents();
+}
+
+function updateModalPrice() {
+  const product = state.currentModalProduct;
+  if (!product) return;
+
+  const qty = state.currentModalSelectedQty;
+  const unitPrice = getUnitPrice(product, qty);
+  const total = unitPrice * qty;
+
+  const priceEl = $("#modal-item-price");
+  const unitLblEl = $("#modal-unit-price-lbl");
+
+  if (priceEl) priceEl.textContent = money(total);
+  if (unitLblEl) unitLblEl.textContent = `(${money(unitPrice)} a unidade)`;
+}
+
+function setupDropdownEvents() {
+  const btn = $("#qty-dropdown-btn");
+  const menu = $("#qty-dropdown-menu");
+  const customTrigger = $("#trigger-custom-qty");
+  const customBox = $("#custom-qty-box");
+  const applyBtn = $("#btn-apply-custom-qty");
+  const customInput = $("#input-custom-qty-val");
+
+  if (!btn || !menu) return;
+
+  btn.addEventListener("click", () => {
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+  });
+
+  document.querySelectorAll(".qty-dropdown-item[data-select-qty]").forEach(item => {
+    item.addEventListener("click", e => {
+      const qty = parseInt(e.currentTarget.dataset.selectQty, 10);
+      state.currentModalSelectedQty = qty;
+      $("#qty-btn-label").textContent = `${qty} unidades`;
+      menu.style.display = "none";
+      if (customBox) customBox.style.display = "none";
+      updateModalPrice();
+    });
+  });
+
+  if (customTrigger && customBox) {
+    customTrigger.addEventListener("click", () => {
+      customBox.style.display = "block";
+    });
+  }
+
+  if (applyBtn && customInput) {
+    applyBtn.addEventListener("click", () => {
+      const product = state.currentModalProduct;
+      const minQtd = product ? (product.minQuantity || 20) : 20;
+      let val = parseInt(customInput.value, 10);
+
+      if (isNaN(val) || val < minQtd) {
+        showToast(`O pedido mínimo para este produto é de ${minQtd} unidades.`);
+        val = minQtd;
+        customInput.value = minQtd;
+      }
+
+      state.currentModalSelectedQty = val;
+      $("#qty-btn-label").textContent = `${val} unidades`;
+      menu.style.display = "none";
+      updateModalPrice();
+    });
+  }
 }
 
 function closeModal() {
@@ -655,7 +845,7 @@ function cartItems() {
 
 function cartCount() { return cartItems().reduce((sum, item) => sum + item.quantity, 0); }
 function optionPrice(item) { return item.product.optionPrices?.[item.option] || 0; }
-function itemUnitTotal(item) { return item.product.price + optionPrice(item); }
+function itemUnitTotal(item) { return getUnitPrice(item.product, item.quantity) + optionPrice(item); }
 function itemTotal(item) { return itemUnitTotal(item) * item.quantity; }
 
 function renderCart() {
@@ -675,9 +865,9 @@ function renderCart() {
         <strong>${item.product.name}</strong>
         <small>${item.option ? `Opção: ${item.option}<br>` : ""}
         Unit.: ${money(itemUnitTotal(item))} · Subtotal: ${money(itemTotal(item))}</small>
-        <div style="display:flex; gap:6px; margin-top:4px;">
+        <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
           <button type="button" data-decrease="${item.key}" style="width:24px; height:24px;">−</button>
-          <span>${item.quantity}</span>
+          <span>${item.quantity} un.</span>
           <button type="button" data-increase="${item.key}" style="width:24px; height:24px;">+</button>
         </div>
       </div>
@@ -803,7 +993,7 @@ function processCheckout() {
   const grandTotal = subtotal + shippingFee;
 
   const itensFormatados = items.map(item => 
-    `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""}`
+    `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""} - Unit: ${money(itemUnitTotal(item))}`
   ).join("\n");
 
   const dadosParaPlanilha = {
@@ -820,6 +1010,7 @@ function processCheckout() {
     total: money(grandTotal)
   };
 
+  // Dispara o envio dos dados para a planilha / n8n
   if (GOOGLE_SCRIPT_URL) {
     fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
@@ -829,7 +1020,15 @@ function processCheckout() {
     }).catch(err => console.error("Erro ao salvar na planilha:", err));
   }
 
-  const message = `Olá, Raquel! Fiz um pedido pelo site:
+  showToast("Pedido registrado com sucesso!");
+
+  // REGRA DE DIRECCIONAMENTO SEGUNDO A FORMA DE PAGAMENTO
+  if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
+    // Abre APENAS a tela de pagamento do Mercado Pago
+    window.open(MERCADO_PAGO_LINK, "_blank");
+  } else {
+    // Abre APENAS a conversa no WhatsApp para combinar diretamente
+    const message = `Olá, Raquel! Fiz um pedido pelo site:
 
 *Cliente:* ${custName}
 *WhatsApp:* ${custPhone}
@@ -846,17 +1045,8 @@ ${itensFormatados}
 
 Gostaria de confirmar a encomenda e andamento! ✨`;
 
-  showToast("Pedido enviado com sucesso!");
-
-  // Redireciona para o Mercado Pago se a opção for de pagamento online
-  if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
-    window.open(MERCADO_PAGO_LINK, "_blank");
-  }
-
-  // Redireciona também para o WhatsApp com os dados
-  setTimeout(() => {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
-  }, 800);
+  }
 }
 
 /* EVENTOS DE CLIQUE */
@@ -883,15 +1073,19 @@ document.addEventListener("click", e => {
 
   if (e.target.dataset.modalQty) {
     const input = $("#modal-qty-val");
-    let val = parseInt(input.value || "1", 10) + parseInt(e.target.dataset.modalQty, 10);
-    if (val < 1) val = 1;
-    input.value = val;
+    if (input) {
+      let val = parseInt(input.value || "1", 10) + parseInt(e.target.dataset.modalQty, 10);
+      if (val < 1) val = 1;
+      input.value = val;
+      state.currentModalSelectedQty = val;
+      updateModalPrice();
+    }
     return;
   }
 
   if (e.target.id === "modal-confirm-add") {
     const product = state.currentModalProduct;
-    const qty = parseInt($("#modal-qty-val").value || "1", 10);
+    const qty = state.currentModalSelectedQty || parseInt($("#modal-qty-val")?.value || "1", 10);
     const option = $("#modal-option-select")?.value || "";
     const key = `${product.id}:${state.currentModalVariantIndex}:${option}`;
 
@@ -907,13 +1101,21 @@ document.addEventListener("click", e => {
     return;
   }
 
-  if (e.target.dataset.increase) { state.cart[e.target.dataset.increase] += 1; renderCart(); }
-  if (e.target.dataset.decrease) {
-    state.cart[e.target.dataset.decrease] -= 1;
-    if (state.cart[e.target.dataset.decrease] <= 0) delete state.cart[e.target.dataset.decrease];
+  if (e.target.dataset.increase) {
+    const key = e.target.dataset.increase;
+    state.cart[key] += 1;
     renderCart();
   }
-  if (e.target.dataset.remove) { delete state.cart[e.target.dataset.remove]; renderCart(); }
+  if (e.target.dataset.decrease) {
+    const key = e.target.dataset.decrease;
+    state.cart[key] -= 1;
+    if (state.cart[key] <= 0) delete state.cart[key];
+    renderCart();
+  }
+  if (e.target.dataset.remove) {
+    delete state.cart[e.target.dataset.remove];
+    renderCart();
+  }
 
   if (e.target.id === "open-cart") toggleCart(true);
   if (e.target.id === "close-cart" || e.target.id === "cart-backdrop") toggleCart(false);
