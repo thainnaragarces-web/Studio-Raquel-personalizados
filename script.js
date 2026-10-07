@@ -5,7 +5,7 @@ const SHIPPING_FEE = 5.00;
 const GOOGLE_SCRIPT_URL = "https://n8n.raquelpersonalizados.studio/webhook/studio-raquel-pedido";
 
 // Link do Mercado Pago
-const MERCADO_PAGO_LINK = "https://link.mercadopago.com.br/raquelpersonalizadoo"; 
+const MERCADO_PAGO_LINK = "https://link.mercadopago.com.br/raquelpersonalizadoo";
 
 const products = [
   {
@@ -44,7 +44,7 @@ const products = [
     variants: [
       { id: "maria-clara", name: "Maria Clara 13 anos", image: "assets/copo-long-drink-350ml-dtf-uv-maria-clara-13-anos.png" },
       { id: "boteco-vagner", name: "Boteco do Vagner", image: "assets/copo-long-drink-350ml-dtf-uv-boteco-do-vagner.png" },
-      { id: "minnie-mario", name: "Minnie / Kalzone / Mario", image: "assets/copo-long-drink-350ml-dtf-uv-minnie-kalzone-mario.png" }
+      { id: "【entity-minnie¦canonical_name=Minnie】-mario", name: "【entity-Minnie¦canonical_name=Minnie】 / Kalzone / Mario", image: "assets/copo-long-drink-350ml-dtf-uv-【entity-minnie¦canonical_name=Minnie】-kalzone-mario.png" }
     ]
   },
   {
@@ -61,9 +61,9 @@ const products = [
     ],
     presetKits: [20, 50, 100],
     variants: [
-      { id: "baby-looney-levi", name: "Baby Looney Tunes / Levi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-levi.png" },
-      { id: "baby-looney-davi", name: "Baby Looney Tunes / Davi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-davi.png" },
-      { id: "baby-looney-mariah", name: "Baby Looney Tunes / Mariah", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-mariah.png" }
+      { id: "baby-looney-levi", name: "Baby 【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Levi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-levi.png" },
+      { id: "baby-looney-davi", name: "Baby 【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Davi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-davi.png" },
+      { id: "baby-looney-mariah", name: "Baby 【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Mariah", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-mariah.png" }
     ]
   },
   {
@@ -73,7 +73,7 @@ const products = [
     price: 7,
     tag: "R$ 7,00",
     variants: [
-      { id: "mickey", name: "Mickey", image: "assets/caixa-milk-mickey.png" },
+      { id: "【entity-mickey¦canonical_name=Mickey Mouse】", name: "【entity-Mickey¦canonical_name=Mickey Mouse】", image: "assets/caixa-milk-【entity-mickey¦canonical_name=Mickey Mouse】.png" },
       { id: "alice", name: "Alice", image: "assets/caixa-milk-alice.png" },
       { id: "ursinho", name: "Ursinho", image: "assets/caixa-milk-ursinho.png" }
     ]
@@ -110,7 +110,7 @@ const products = [
     tag: "R$ 8,00",
     variants: [
       { id: "bluey", name: "Bluey", image: "assets/caixa-maletinha-2-bluey.png" },
-      { id: "toy-story", name: "Toy Story", image: "assets/caixa-maletinha-2-toy-story.png" },
+      { id: "toy-story", name: "【entity-Toy Story¦canonical_name=Toy Story】", image: "assets/caixa-maletinha-2-toy-story.png" },
       { id: "sortidos", name: "Sortidos", image: "assets/caixa-maletinha-2-sortidos.png" }
     ]
   },
@@ -145,8 +145,8 @@ const products = [
     price: 7,
     tag: "R$ 7,00",
     variants: [
-      { id: "galinha-pintadinha", name: "Galinha Pintadinha", image: "assets/caixa-bala-galinha-pintadinha.png" },
-      { id: "minnie", name: "Minnie", image: "assets/caixa-bala-minnie.png" },
+      { id: "galinha-pintadinha", name: "【entity-Galinha Pintadinha¦canonical_name=Galinha Pintadinha】", image: "assets/caixa-bala-galinha-pintadinha.png" },
+      { id: "【entity-minnie¦canonical_name=Minnie】", name: "【entity-Minnie¦canonical_name=Minnie】", image: "assets/caixa-bala-【entity-minnie¦canonical_name=Minnie】.png" },
       { id: "borboleta", name: "Borboleta", image: "assets/caixa-bala-borboleta.png" }
     ]
   },
@@ -177,20 +177,20 @@ const products = [
       { id: "sonic", name: "Sonic", image: "assets/saco-zip-lock-sonic.png" },
       { id: "marie", name: "Marie", image: "assets/saco-zip-lock-marie.png" },
       { id: "abelhinha-bella", name: "Abelhinha / Bella", image: "assets/saco-zip-lock-abelhinha-bella.png" },
-      { id: "looney-tunes-alice", name: "Looney Tunes / Alice", image: "assets/saco-zip-lock-looney-tunes-alice.png" }
+      { id: "looney-tunes-alice", name: "【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Alice", image: "assets/saco-zip-lock-looney-tunes-alice.png" }
     ]
   },
   {
-    id: "embalagem-cheetos",
-    name: "Embalagem de Cheetos personalizada",
+    id: "embalagem-【entity-cheetos¦canonical_name=Cheetos】",
+    name: "Embalagem de 【entity-Cheetos¦canonical_name=Cheetos】 personalizada",
     description: "Uma embalagem divertida para deixar a comemoração ainda mais especial.",
     price: 5.5,
     tag: "R$ 5,50",
     variants: [
-      { id: "daniel", name: "Daniel", image: "assets/embalagem-cheetos-daniel.png" },
-      { id: "sonic", name: "Sonic", image: "assets/embalagem-cheetos-sonic.png" },
-      { id: "minnie", name: "Minnie", image: "assets/embalagem-cheetos-minnie.png" },
-      { id: "marquinhos-herois", name: "Marquinhos / Heróis", image: "assets/embalagem-cheetos-marquinhos-herois.png" }
+      { id: "daniel", name: "Daniel", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-daniel.png" },
+      { id: "sonic", name: "Sonic", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-sonic.png" },
+      { id: "minnie", name: "Minnie", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-minnie.png" },
+      { id: "marquinhos-herois", name: "Marquinhos / Heróis", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-marquinhos-herois.png" }
     ]
   },
   {
@@ -201,7 +201,7 @@ const products = [
     tag: "R$ 3,00",
     variants: [
       { id: "stitch", name: "Stitch", image: "assets/embalagem-fini-stitch.png" },
-      { id: "toy-story", name: "Toy Story", image: "assets/embalagem-fini-toy-story.png" },
+      { id: "toy-story", name: "【entity-Toy Story¦canonical_name=Toy Story】", image: "assets/embalagem-fini-toy-story.png" },
       { id: "menino-tiago", name: "Menino / Tiago", image: "assets/embalagem-fini-menino-tiago.png" }
     ]
   },
@@ -238,7 +238,7 @@ const products = [
     price: 2.5,
     tag: "R$ 2,50",
     variants: [
-      { id: "hotwheels", name: "Hot Wheels / Miguel", image: "assets/adesivo-garrafa-hotwheels.png" },
+      { id: "hotwheels", name: "【entity-Hot Wheels¦canonical_name=Hot Wheels】 / Miguel", image: "assets/adesivo-garrafa-hotwheels.png" },
       { id: "ovelhinha", name: "Ovelhinha / Maysa", image: "assets/adesivo-garrafa-ovelhinha.png" }
     ]
   },
@@ -426,9 +426,9 @@ function createProductCard(product) {
 function renderSite() {
   const grid = $("#product-grid");
   const feat = $("#featured-products");
-  
+
   if (grid) grid.innerHTML = products.map(createProductCard).join("");
-  
+
   if (feat) {
     const featuredList = products.filter(p => FEATURED_IDS.includes(p.id));
     feat.innerHTML = featuredList.map(createProductCard).join("");
@@ -462,11 +462,11 @@ function setupSearch() {
   const searchInput = $("#product-search-input");
   const clearSearchBtn = $("#clear-search-btn");
 
-  if (!toggleSearchBtn || !headerSearchBar || !searchInput) return;
+  if (!toggleSearchBtn ||!headerSearchBar ||!searchInput) return;
 
   toggleSearchBtn.addEventListener("click", () => {
     const isHidden = headerSearchBar.hidden;
-    headerSearchBar.hidden = !isHidden;
+    headerSearchBar.hidden =!isHidden;
     toggleSearchBtn.classList.toggle("is-active", isHidden);
     if (isHidden) {
       setTimeout(() => searchInput.focus(), 100);
@@ -495,8 +495,8 @@ function filterProducts(searchTerm) {
   const grid = $("#product-grid");
   if (!grid) return;
 
-  const filtered = products.filter(p => 
-    p.name.toLowerCase().includes(term) || 
+  const filtered = products.filter(p =>
+    p.name.toLowerCase().includes(term) ||
     p.description.toLowerCase().includes(term)
   );
 
@@ -530,28 +530,28 @@ function openModal(productId) {
   state.currentModalSelectedQty = product.minQuantity || 1;
 
   const totalVariants = product.variants.length;
-  const optionLabel = product.id === "saco-zip-lock" ? " do chaveiro" : product.id === "convite-interativo" ? " do vídeo" : product.id === "bolinha-natal-personalizada" ? " da quantidade" : " da alça";
-  
-  const optionsHtml = product.options ? `
+  const optionLabel = product.id === "saco-zip-lock"? " do chaveiro" : product.id === "convite-interativo"? " do vídeo" : product.id === "bolinha-natal-personalizada"? " da quantidade" : " da alça";
+
+  const optionsHtml = product.options? `
     <div class="modal-form-group">
       <label for="modal-option-select">Opção${optionLabel}</label>
       <select id="modal-option-select">
-        ${product.options.map(opt => `<option value="${opt}">${opt}${product.optionPrices?.[opt] ? ` (+ ${money(product.optionPrices[opt])})` : " (sem adicional)"}</option>`).join("")}
+        ${product.options.map(opt => `<option value="${opt}">${opt}${product.optionPrices?.[opt]? ` (+ ${money(product.optionPrices[opt])})` : " (sem adicional)"}</option>`).join("")}
       </select>
     </div>` : "";
 
-  const arrowsHtml = totalVariants > 1 ? `
+  const arrowsHtml = totalVariants > 1? `
     <button class="gallery-arrow prev" type="button" data-modal-arrow="-1">‹</button>
     <button class="gallery-arrow next" type="button" data-modal-arrow="1">›</button>
     <div class="gallery-dots">
-      ${product.variants.map((_, i) => `<span class="g-dot ${i === 0 ? 'active' : ''}"></span>`).join("")}
+      ${product.variants.map((_, i) => `<span class="g-dot ${i === 0? 'active' : ''}"></span>`).join("")}
     </div>` : "";
 
   // SELETOR DE QUANTIDADE
   let qtySelectorHtml = "";
   if (product.priceTiers && product.priceTiers.length > 0) {
     const minQtd = product.minQuantity || 20;
-    const maxPreset = product.presetKits ? Math.max(...product.presetKits) : 50;
+    const maxPreset = product.presetKits? Math.max(...product.presetKits) : 50;
 
     let dropdownItems = "";
     if (product.presetKits) {
@@ -565,7 +565,7 @@ function openModal(productId) {
     qtySelectorHtml = `
       <div class="qty-picker-container" style="margin: 15px 0;">
         <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Quantidade (Pedido mínimo: ${minQtd} un.):</label>
-        
+
         <div class="custom-qty-dropdown" style="position: relative; width: 100%;">
           <button type="button" id="qty-dropdown-btn" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #fff; text-align: left; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
             <span id="qty-btn-label">${state.currentModalSelectedQty} unidades</span>
@@ -574,7 +574,7 @@ function openModal(productId) {
 
           <div id="qty-dropdown-menu" class="qty-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; margin-top: 4px; padding: 6px 0;">
             ${dropdownItems}
-            
+
             <div id="custom-qty-box" style="display: none; padding: 10px; border-top: 1px solid #eee; background: #f9f9f9;">
               <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">Digite a quantidade desejada:</label>
               <div style="display: flex; gap: 6px;">
@@ -607,7 +607,7 @@ function openModal(productId) {
     <div class="modal-info-body">
       <h2 class="modal-product-title">${product.name}</h2>
       <p class="modal-product-desc">${product.description}</p>
-      
+
       ${optionsHtml}
       ${qtySelectorHtml}
 
@@ -659,10 +659,10 @@ function setupDropdownEvents() {
   const applyBtn = $("#btn-apply-custom-qty");
   const customInput = $("#input-custom-qty-val");
 
-  if (!btn || !menu) return;
+  if (!btn ||!menu) return;
 
   btn.addEventListener("click", () => {
-    menu.style.display = menu.style.display === "none" ? "block" : "none";
+    menu.style.display = menu.style.display === "none"? "block" : "none";
   });
 
   document.querySelectorAll(".qty-dropdown-item[data-select-qty]").forEach(item => {
@@ -685,7 +685,7 @@ function setupDropdownEvents() {
   if (applyBtn && customInput) {
     applyBtn.addEventListener("click", () => {
       const product = state.currentModalProduct;
-      const minQtd = product ? (product.minQuantity || 20) : 20;
+      const minQtd = product? (product.minQuantity || 20) : 20;
       let val = parseInt(customInput.value, 10);
 
       if (isNaN(val) || val < minQtd) {
@@ -715,7 +715,7 @@ function updateModalGalleryImage(index) {
   const img = $("#modal-main-img");
   if (img) img.src = product.variants[index].image;
 
-  document.querySelectorAll(".gallery-dots .g-dot").forEach((dot, idx) => {
+  document.querySelectorAll(".gallery-dots.g-dot").forEach((dot, idx) => {
     dot.classList.toggle("active", idx === index);
   });
 }
@@ -730,7 +730,7 @@ function setupGallerySwipe() {
     if (Math.abs(diff) > 35) {
       const product = state.currentModalProduct;
       const total = product.variants.length;
-      let next = diff > 0 ? (state.currentModalVariantIndex + 1) % total : (state.currentModalVariantIndex - 1 + total) % total;
+      let next = diff > 0? (state.currentModalVariantIndex + 1) % total : (state.currentModalVariantIndex - 1 + total) % total;
       updateModalGalleryImage(next);
     }
   }, { passive: true });
@@ -790,7 +790,7 @@ function moveCarousel(direction) {
 function setupCarouselSwipe() {
   const container = document.getElementById("carousel-container");
   const track = document.getElementById("featured-products");
-  if (!container || !track) return;
+  if (!container ||!track) return;
 
   let startX = 0;
   let currentX = 0;
@@ -838,7 +838,7 @@ function cartItems() {
     const [productId, variantIndexStr, option] = key.split(":");
     const itemProduct = productById(productId);
     const variantIndex = parseInt(variantIndexStr || "0", 10);
-    const currentVariant = itemProduct && itemProduct.variants[variantIndex] ? itemProduct.variants[variantIndex] : itemProduct?.variants[0];
+    const currentVariant = itemProduct && itemProduct.variants[variantIndex]? itemProduct.variants[variantIndex] : itemProduct?.variants[0];
     return { key, product: itemProduct, variant: currentVariant, option, quantity };
   }).filter(item => item.product && item.variant);
 }
@@ -851,19 +851,19 @@ function itemTotal(item) { return itemUnitTotal(item) * item.quantity; }
 function renderCart() {
   const items = cartItems();
   const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
-  const shippingMode = $("#order-shipping") ? $("#order-shipping").value : "Retirada no Local";
-  const shippingFee = shippingMode === "Envio" ? SHIPPING_FEE : 0;
+  const shippingMode = $("#order-shipping")? $("#order-shipping").value : "Retirada no Local";
+  const shippingFee = shippingMode === "Envio"? SHIPPING_FEE : 0;
   const grandTotal = subtotal + shippingFee;
   const missing = Math.max(0, MINIMUM_ORDER - subtotal);
 
   $("#cart-count").textContent = cartCount();
 
-  $("#cart-content").innerHTML = items.length ? items.map(item => `
+  $("#cart-content").innerHTML = items.length? items.map(item => `
     <div class="cart-item">
       <img src="${item.variant.image}" alt="">
       <div class="cart-item-info">
         <strong>${item.product.name}</strong>
-        <small>${item.option ? `Opção: ${item.option}<br>` : ""}
+        <small>${item.option? `Opção: ${item.option}<br>` : ""}
         Unit.: ${money(itemUnitTotal(item))} · Subtotal: ${money(itemTotal(item))}</small>
         <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
           <button type="button" data-decrease="${item.key}" style="width:24px; height:24px;">−</button>
@@ -882,7 +882,7 @@ function renderCart() {
       checkoutFieldsContainer.innerHTML = `
         <div class="checkout-form-box" style="margin-top: 15px; padding: 12px; background: #fdf8f8; border-radius: 8px; border: 1px solid #f2e2e2;">
           <h3 style="font-size: 14px; margin-bottom: 10px; color: #8a2be2;">Dados para Personalização & Envio</h3>
-          
+
           <div class="cart-field" style="margin-bottom: 8px;">
             <label style="font-size: 12px; font-weight: bold;">Seu Nome Completo *</label>
             <input type="text" id="cust-name" placeholder="Ex: Gabriela Souza" required style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px;">
@@ -930,7 +930,7 @@ function renderCart() {
               <span>Subtotal dos Itens:</span>
               <span>${money(subtotal)}</span>
             </div>
-            ${shippingFee > 0 ? `
+            ${shippingFee > 0? `
             <div style="display:flex; justify-content:space-between; font-size:12px; color:#b81b37;">
               <span>Taxa de Entrega:</span>
               <span>+ ${money(shippingFee)}</span>
@@ -948,32 +948,32 @@ function renderCart() {
   }
 
   $("#cart-footer").innerHTML = `
-    <div class="minimum-order ${missing ? 'is-pending' : 'is-met'}" style="text-align:center; margin-bottom:8px;">
-      ${missing ? `Faltam ${money(missing)} para o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido!"}
+    <div class="minimum-order ${missing? 'is-pending' : 'is-met'}" style="text-align:center; margin-bottom:8px;">
+      ${missing? `Faltam ${money(missing)} para o mínimo de ${money(MINIMUM_ORDER)}` : "Pedido mínimo atingido!"}
     </div>
-    <button class="whatsapp-button" id="process-checkout-btn" type="button" ${subtotal >= MINIMUM_ORDER ? "" : "disabled"}>
-      ${subtotal >= MINIMUM_ORDER ? `PAGAR / FINALIZAR PEDIDO (${money(grandTotal)})` : `Adicione mais ${money(missing)}`}
+    <button class="whatsapp-button" id="process-checkout-btn" type="button" ${subtotal >= MINIMUM_ORDER? "" : "disabled"}>
+      ${subtotal >= MINIMUM_ORDER? `PAGAR / FINALIZAR PEDIDO (${money(grandTotal)})` : `Adicione mais ${money(missing)}`}
     </button>
   `;
 }
 
-function showToast(message) { 
-  const toast = $("#toast"); 
+function showToast(message) {
+  const toast = $("#toast");
   if (!toast) return;
-  toast.textContent = message; 
-  toast.classList.add("show"); 
-  setTimeout(() => toast.classList.remove("show"), 2200); 
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
 function toggleCart(open) {
   const drawer = $("#cart-drawer");
   if (!drawer) return;
   drawer.classList.toggle("is-open", open);
-  $("#cart-backdrop").hidden = !open;
+  $("#cart-backdrop").hidden =!open;
 }
 
-/* PROCESSAMENTO DO CHECKOUT (PLANILHA + DIRECIONAMENTO) */
-function processCheckout() {
+/* PROCESSAMENTO DO CHECKOUT (PLANILHA + DIRECIONAMENTO) - ALTERADO */
+async function processCheckout() {
   const custName = $("#cust-name")?.value.trim();
   const custPhone = $("#cust-phone")?.value.trim();
   const custTheme = $("#cust-theme")?.value.trim();
@@ -982,18 +982,18 @@ function processCheckout() {
   const shippingMode = $("#order-shipping")?.value || "Retirada no Local";
   const payMethod = $("#pay-method")?.value || "Finalizar no WhatsApp";
 
-  if (!custName || !custPhone || !custTheme || !custChild || !custDate) {
+  if (!custName ||!custPhone ||!custTheme ||!custChild ||!custDate) {
     showToast("Por favor, preencha todos os campos do checkout!");
     return;
   }
 
   const items = cartItems();
   const subtotal = items.reduce((sum, item) => sum + itemTotal(item), 0);
-  const shippingFee = shippingMode === "Envio" ? SHIPPING_FEE : 0;
+  const shippingFee = shippingMode === "Envio"? SHIPPING_FEE : 0;
   const grandTotal = subtotal + shippingFee;
 
-  const itensFormatados = items.map(item => 
-    `• ${item.quantity}x ${item.product.name}${item.option ? ` (${item.option})` : ""} - Unit: ${money(itemUnitTotal(item))}`
+  const itensFormatados = items.map(item =>
+    `• ${item.quantity}x ${item.product.name}${item.option? ` (${item.option})` : ""} - Unit: ${money(itemUnitTotal(item))}`
   ).join("\n");
 
   const dadosParaPlanilha = {
@@ -1007,45 +1007,59 @@ function processCheckout() {
     nomeIdade: custChild,
     formaEntrega: shippingMode,
     formaPagamento: payMethod,
-    total: money(grandTotal)
+    total: grandTotal,
+    totalFormatado: money(grandTotal)
   };
 
-  // Dispara o envio dos dados para a planilha / n8n
-  if (GOOGLE_SCRIPT_URL) {
-    fetch(GOOGLE_SCRIPT_URL, {
+  const btn = $("#process-checkout-btn");
+  const textoOriginal = btn.innerText;
+  btn.innerText = "Processando...";
+  btn.disabled = true;
+
+  try {
+    // 1. Salva na planilha / n8n (CORREÇÃO DO NO-CORS)
+    await fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
-      mode: "no-cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dadosParaPlanilha)
-    }).catch(err => console.error("Erro ao salvar na planilha:", err));
-  }
+    });
 
-  showToast("Pedido registrado com sucesso!");
+    showToast("Pedido registrado com sucesso!");
 
-  // REGRA DE DIRECCIONAMENTO SEGUNDO A FORMA DE PAGAMENTO
-  if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
-    // Abre APENAS a tela de pagamento do Mercado Pago
+    // 2. REGRA DE DIRECIONAMENTO
+    if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
+      // CHAMA O N8N PARA CRIAR O LINK DINÂMICO COM O VALOR CERTO
+      const respPagamento = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          formaPagamento: payMethod,
+          total: grandTotal,
+          nome: custName,
+          produtos: itensFormatados
+        })
+      });
+
+      const data = await respPagamento.json();
+
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        window.open(MERCADO_PAGO_LINK, "_blank");
+      }
+
+    } else {
+      const message = `Olá, Raquel! Fiz um pedido pelo site:\n\n*Cliente:* ${custName}\n*WhatsApp:* ${custPhone}\n*Aniversariante:* ${custChild}\n*Tema da Festa:* ${custTheme}\n*Data do Evento:* ${custDate}\n\n*Itens do Pedido:*\n${itensFormatados}\n\n*Forma de Entrega:* ${shippingMode}\n*Forma de Pagamento:* ${payMethod}\n*Total:* ${money(grandTotal)}\n\nGostaria de confirmar a encomenda e andamento! ✨`;
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast("Erro ao processar, abrindo pagamento padrão...");
     window.open(MERCADO_PAGO_LINK, "_blank");
-  } else {
-    // Abre APENAS a conversa no WhatsApp para combinar diretamente
-    const message = `Olá, Raquel! Fiz um pedido pelo site:
-
-*Cliente:* ${custName}
-*WhatsApp:* ${custPhone}
-*Aniversariante:* ${custChild}
-*Tema da Festa:* ${custTheme}
-*Data do Evento:* ${custDate}
-
-*Itens do Pedido:*
-${itensFormatados}
-
-*Forma de Entrega:* ${shippingMode}
-*Forma de Pagamento:* ${payMethod}
-*Total:* ${money(grandTotal)}
-
-Gostaria de confirmar a encomenda e andamento! ✨`;
-
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+  } finally {
+    btn.innerText = textoOriginal;
+    btn.disabled = false;
   }
 }
 
