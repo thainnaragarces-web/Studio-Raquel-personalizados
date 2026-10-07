@@ -902,14 +902,33 @@ body {
   .hero-compact h1 { font-size: 1.65rem; }
   .carousel-track .modern-product-card { flex: 0 0 72vw; }
   
+  /* MANTÉM 3 COLUNAS PERFEITAMENTE */
   .product-grid-three {
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
-  .card-img-container { height: 110px !important; }
-  .card-details-row { padding: 6px 8px !important; }
-  .card-title-lbl { font-size: 0.72rem !important; }
-  .card-price-badge { font-size: 0.7rem !important; padding: 3px 6px !important; }
+  
+  .card-img-container { height: 100px !important; }
+  
+  /* EMPILHA TÍTULO E PREÇO VERTICALMENTE PARA NÃO SOBREPOR */
+  .card-details-row { 
+    padding: 6px 5px !important; 
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  
+  .card-title-lbl { 
+    font-size: 0.68rem !important; 
+    line-height: 1.15 !important;
+    width: 100% !important;
+  }
+  
+  .card-price-badge { 
+    font-size: 0.62rem !important; 
+    padding: 2px 4px !important; 
+    align-self: flex-start !important;
+  }
   
   .whatsapp-float-btn {
     bottom: calc(16px + env(safe-area-inset-bottom));
@@ -917,6 +936,7 @@ body {
     width: 50px;
     height: 50px;
   }
+  
   .whatsapp-float-btn svg {
     width: 28px;
     height: 28px;
