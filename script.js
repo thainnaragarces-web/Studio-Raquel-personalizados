@@ -73,7 +73,7 @@ const products = [
     price: 7,
     tag: "R$ 7,00",
     variants: [
-      { id: "【entity-mickey¦canonical_name=Mickey Mouse】", name: "【entity-Mickey¦canonical_name=Mickey Mouse】", image: "assets/caixa-milk-【entity-mickey¦canonical_name=Mickey Mouse】.png" },
+      { id: "Mickey Mouse", name: "Mickey Mouse", image: "assets/caixa-milk-mickey.png" },
       { id: "alice", name: "Alice", image: "assets/caixa-milk-alice.png" },
       { id: "ursinho", name: "Ursinho", image: "assets/caixa-milk-ursinho.png" }
     ]
@@ -187,10 +187,10 @@ const products = [
     price: 5.5,
     tag: "R$ 5,50",
     variants: [
-      { id: "daniel", name: "Daniel", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-daniel.png" },
-      { id: "sonic", name: "Sonic", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-sonic.png" },
-      { id: "minnie", name: "Minnie", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-minnie.png" },
-      { id: "marquinhos-herois", name: "Marquinhos / Heróis", image: "assets/embalagem-【entity-cheetos¦canonical_name=Cheetos】-marquinhos-herois.png" }
+      { id: "daniel", name: "Daniel", image: "assets/embalagem-cheetos-daniel.png" },
+      { id: "sonic", name: "Sonic", image: "assets/embalagem-cheetos-sonic.png" },
+      { id: "minnie", name: "Minnie", image: "assets/embalagem-cheetos-minnie.png" },
+      { id: "marquinhos-herois", name: "Marquinhos / Heróis", image: "assets/embalagem-cheetos-marquinhos-herois.png" }
     ]
   },
   {
