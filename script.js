@@ -972,7 +972,7 @@ function toggleCart(open) {
   $("#cart-backdrop").hidden =!open;
 }
 
-/* PROCESSAMENTO DO CHECKOUT (PLANILHA + DIRECIONAMENTO) - ALTERADO */
+/* PROCESSAMENTO DO CHECKOUT (PLANILHA + DIRECIONAMENTO) - CORRIGIDO - 1 ENVIO SÓ */
 async function processCheckout() {
   const custName = $("#cust-name")?.value.trim();
   const custPhone = $("#cust-phone")?.value.trim();
@@ -1016,6 +1016,32 @@ async function processCheckout() {
   btn.innerText = "Processando...";
   btn.disabled = true;
 
+  try {
+    const resp = await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dadosParaPlanilha)
+    });
+
+    const data = await resp.json();
+    showToast("Pedido registrado!");
+
+    if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        window.open(MERCADO_PAGO_LINK, "_blank");
+      }
+    } else {
+      const message = `Olá, Raquel! Pedido:\n*Cliente:* ${custName}\n*Whats:* ${custPhone}\n*Itens:*\n${itensFormatados}\n*Total:* ${money(grandTotal)}`;
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+  } catch (err) {
+    window.open(MERCADO_PAGO_LINK, "_blank");
+  } finally {
+    btn.innerText = textoOriginal;
+    btn.disabled = false;
+  }
   try {
     // 1. Salva na planilha / n8n (CORREÇÃO DO NO-CORS)
     await fetch(GOOGLE_SCRIPT_URL, {
