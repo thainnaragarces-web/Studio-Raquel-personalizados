@@ -44,7 +44,7 @@ const products = [
     variants: [
       { id: "maria-clara", name: "Maria Clara 13 anos", image: "assets/copo-long-drink-350ml-dtf-uv-maria-clara-13-anos.png" },
       { id: "boteco-vagner", name: "Boteco do Vagner", image: "assets/copo-long-drink-350ml-dtf-uv-boteco-do-vagner.png" },
-      { id: "【entity-minnie¦canonical_name=Minnie】-mario", name: "【entity-Minnie¦canonical_name=Minnie】 / Kalzone / Mario", image: "assets/copo-long-drink-350ml-dtf-uv-【entity-minnie¦canonical_name=Minnie】-kalzone-mario.png" }
+      { id: "minnie-mario", name: "Minnie / Kalzone / Mario", image: "assets/copo-long-drink-350ml-dtf-uv-minnie-kalzone-mario.png" }
     ]
   },
   {
@@ -61,9 +61,9 @@ const products = [
     ],
     presetKits: [20, 50, 100],
     variants: [
-      { id: "baby-looney-levi", name: "Baby 【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Levi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-levi.png" },
-      { id: "baby-looney-davi", name: "Baby 【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Davi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-davi.png" },
-      { id: "baby-looney-mariah", name: "Baby 【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Mariah", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-mariah.png" }
+      { id: "baby-looney-levi", name: "Baby Looney Tunes / Levi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-levi.png" },
+      { id: "baby-looney-davi", name: "Baby Looney Tunes / Davi", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-davi.png" },
+      { id: "baby-looney-mariah", name: "Baby Looney Tunes / Mariah", image: "assets/copo-twister-300ml-dtf-uv-baby-looney-tunes-mariah.png" }
     ]
   },
   {
@@ -110,7 +110,7 @@ const products = [
     tag: "R$ 8,00",
     variants: [
       { id: "bluey", name: "Bluey", image: "assets/caixa-maletinha-2-bluey.png" },
-      { id: "toy-story", name: "【entity-Toy Story¦canonical_name=Toy Story】", image: "assets/caixa-maletinha-2-toy-story.png" },
+      { id: "toy-story", name: "Toy Story", image: "assets/caixa-maletinha-2-toy-story.png" },
       { id: "sortidos", name: "Sortidos", image: "assets/caixa-maletinha-2-sortidos.png" }
     ]
   },
@@ -145,8 +145,8 @@ const products = [
     price: 7,
     tag: "R$ 7,00",
     variants: [
-      { id: "galinha-pintadinha", name: "【entity-Galinha Pintadinha¦canonical_name=Galinha Pintadinha】", image: "assets/caixa-bala-galinha-pintadinha.png" },
-      { id: "【entity-minnie¦canonical_name=Minnie】", name: "【entity-Minnie¦canonical_name=Minnie】", image: "assets/caixa-bala-【entity-minnie¦canonical_name=Minnie】.png" },
+      { id: "galinha-pintadinha", name: "Galinha Pintadinha", image: "assets/caixa-bala-galinha-pintadinha.png" },
+      { id: "minnie", name: "Minnie", image: "assets/caixa-bala-minnie.png" },
       { id: "borboleta", name: "Borboleta", image: "assets/caixa-bala-borboleta.png" }
     ]
   },
@@ -177,12 +177,12 @@ const products = [
       { id: "sonic", name: "Sonic", image: "assets/saco-zip-lock-sonic.png" },
       { id: "marie", name: "Marie", image: "assets/saco-zip-lock-marie.png" },
       { id: "abelhinha-bella", name: "Abelhinha / Bella", image: "assets/saco-zip-lock-abelhinha-bella.png" },
-      { id: "looney-tunes-alice", name: "【entity-Looney Tunes¦canonical_name=Looney Tunes】 / Alice", image: "assets/saco-zip-lock-looney-tunes-alice.png" }
+      { id: "looney-tunes-alice", name: "Looney Tunes / Alice", image: "assets/saco-zip-lock-looney-tunes-alice.png" }
     ]
   },
   {
-    id: "embalagem-【entity-cheetos¦canonical_name=Cheetos】",
-    name: "Embalagem de 【entity-Cheetos¦canonical_name=Cheetos】 personalizada",
+    id: "embalagem-cheetos",
+    name: "Embalagem de Cheetos personalizada",
     description: "Uma embalagem divertida para deixar a comemoração ainda mais especial.",
     price: 5.5,
     tag: "R$ 5,50",
@@ -201,7 +201,7 @@ const products = [
     tag: "R$ 3,00",
     variants: [
       { id: "stitch", name: "Stitch", image: "assets/embalagem-fini-stitch.png" },
-      { id: "toy-story", name: "【entity-Toy Story¦canonical_name=Toy Story】", image: "assets/embalagem-fini-toy-story.png" },
+      { id: "toy-story", name: "Toy Story", image: "assets/embalagem-fini-toy-story.png" },
       { id: "menino-tiago", name: "Menino / Tiago", image: "assets/embalagem-fini-menino-tiago.png" }
     ]
   },
@@ -238,7 +238,7 @@ const products = [
     price: 2.5,
     tag: "R$ 2,50",
     variants: [
-      { id: "hotwheels", name: "【entity-Hot Wheels¦canonical_name=Hot Wheels】 / Miguel", image: "assets/adesivo-garrafa-hotwheels.png" },
+      { id: "hotwheels", name: "Hot Wheels / Miguel", image: "assets/adesivo-garrafa-hotwheels.png" },
       { id: "ovelhinha", name: "Ovelhinha / Maysa", image: "assets/adesivo-garrafa-ovelhinha.png" }
     ]
   },
@@ -972,8 +972,11 @@ function toggleCart(open) {
   $("#cart-backdrop").hidden =!open;
 }
 
-/* PROCESSAMENTO DO CHECKOUT (PLANILHA + DIRECIONAMENTO) - CORRIGIDO - 1 ENVIO SÓ */
+/* PROCESSAMENTO DO CHECKOUT - VERSAO CORRIGIDA - APENAS 1 ENVIO */
 async function processCheckout() {
+  if (window.isProcessing) return;
+  window.isProcessing = true;
+
   const custName = $("#cust-name")?.value.trim();
   const custPhone = $("#cust-phone")?.value.trim();
   const custTheme = $("#cust-theme")?.value.trim();
@@ -984,6 +987,7 @@ async function processCheckout() {
 
   if (!custName ||!custPhone ||!custTheme ||!custChild ||!custDate) {
     showToast("Por favor, preencha todos os campos do checkout!");
+    window.isProcessing = false;
     return;
   }
 
@@ -1033,59 +1037,16 @@ async function processCheckout() {
         window.open(MERCADO_PAGO_LINK, "_blank");
       }
     } else {
-      const message = `Olá, Raquel! Pedido:\n*Cliente:* ${custName}\n*Whats:* ${custPhone}\n*Itens:*\n${itensFormatados}\n*Total:* ${money(grandTotal)}`;
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
-    }
-  } catch (err) {
-    window.open(MERCADO_PAGO_LINK, "_blank");
-  } finally {
-    btn.innerText = textoOriginal;
-    btn.disabled = false;
-  }
-  try {
-    // 1. Salva na planilha / n8n (CORREÇÃO DO NO-CORS)
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dadosParaPlanilha)
-    });
-
-    showToast("Pedido registrado com sucesso!");
-
-    // 2. REGRA DE DIRECIONAMENTO
-    if (payMethod.includes("Pix") || payMethod.includes("Cartão")) {
-      // CHAMA O N8N PARA CRIAR O LINK DINÂMICO COM O VALOR CERTO
-      const respPagamento = await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          formaPagamento: payMethod,
-          total: grandTotal,
-          nome: custName,
-          produtos: itensFormatados
-        })
-      });
-
-      const data = await respPagamento.json();
-
-      if (data.init_point) {
-        window.location.href = data.init_point;
-      } else {
-        window.open(MERCADO_PAGO_LINK, "_blank");
-      }
-
-    } else {
       const message = `Olá, Raquel! Fiz um pedido pelo site:\n\n*Cliente:* ${custName}\n*WhatsApp:* ${custPhone}\n*Aniversariante:* ${custChild}\n*Tema da Festa:* ${custTheme}\n*Data do Evento:* ${custDate}\n\n*Itens do Pedido:*\n${itensFormatados}\n\n*Forma de Entrega:* ${shippingMode}\n*Forma de Pagamento:* ${payMethod}\n*Total:* ${money(grandTotal)}\n\nGostaria de confirmar a encomenda e andamento! ✨`;
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
     }
-
   } catch (err) {
     console.error(err);
-    showToast("Erro ao processar, abrindo pagamento padrão...");
     window.open(MERCADO_PAGO_LINK, "_blank");
   } finally {
     btn.innerText = textoOriginal;
     btn.disabled = false;
+    window.isProcessing = false;
   }
 }
 
