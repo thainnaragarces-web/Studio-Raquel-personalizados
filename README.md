@@ -1,23 +1,85 @@
-Studio Raquel — papelaria personalizada
+# Studio Raquel Personalizados
 
-Catálogo estático, responsivo e mobile-first para Caixa Milk, Caixa Pirâmide, Caixa Maletinha – Modelo 1, Caixa Maletinha – Modelo 2, Caixa Canudo, Caixa Sushi, Caixa Bala, Caixa Almofada, Saco Zip Lock personalizado, Embalagem de Cheetos personalizada, Embalagem de Fini personalizada, Convite Interativo, Cartela de adesivos personalizados, Adesivo rótulo para garrafa, Etiqueta escolar — cartela, Centro de mesa, Plaquinha de centro de mesa, Livrinho de colorir personalizado, Cards de colorir, Sacolinha personalizada G e Sacolinha personalizada P, com destaques, seleção de modelo, opções extras, carrinho lateral e finalização do pedido pelo WhatsApp. A implementação usa apenas HTML, CSS e JavaScript, sem build ou dependências externas.
+Site de catálogo e pedidos criado para uma **papelaria e loja de personalizados**. A experiência apresenta produtos para festas, lembrancinhas e outras celebrações, permitindo que cada cliente informe o tema e monte um pedido de acordo com a sua necessidade.
 
-Personalização
+![Página inicial com produtos em destaque](docs/images/screenshot-home-produtos.png)
 
-Os produtos e suas variantes estão no início de script.js, no array products. Todas as fotos e nomes de variantes são referências ilustrativas: o cliente pode pedir qualquer tema. Cada card exige o preenchimento de “Qual tema você deseja?” antes de adicionar, e o tema informado é levado ao carrinho e ao WhatsApp. A Caixa Almofada exige “Com alça” ou “Sem alça”. O Saco Zip Lock tem preço base de R$ 7,50 e oferece “Sem chaveiro” (sem adicional) ou “Com chaveiro” (+ R$ 2,50), totalizando R$ 10,00 com chaveiro. A Embalagem de Cheetos custa R$ 5,50, a Embalagem de Fini custa R$ 3,00, o Convite Interativo tem base de R$ 39,99 e oferece “Sem vídeo” ou “Com vídeo” (+ R$ 25,00), a Cartela de adesivos custa R$ 20,00, o Adesivo rótulo para garrafa custa R$ 2,50, a Etiqueta escolar — cartela custa R$ 12,00, o Centro de mesa custa R$ 12,00, a Plaquinha de centro de mesa custa R$ 5,00, o Livrinho de colorir custa R$ 6,50, o pacote de Cards de colorir custa R$ 7,00 e contém 3 cards para colorir, a Sacolinha personalizada G custa R$ 10,00 e a Sacolinha personalizada P custa R$ 7,00. O rótulo é indicado para garrafas de suco, água ou refrigerante. O carrinho e o WhatsApp mostram base, adicional e total separadamente quando aplicável. Os demais preços permanecem: Caixa Milk, Caixa Pirâmide, Caixa Canudo, Caixa Sushi, Caixa Bala e Caixa Almofada por R$ 7,00; Caixa Maletinha – Modelo 1 e Modelo 2 por R$ 8,00. Substitua nomes, imagens e o valor de price em reais (por exemplo, 12.5) quando necessário. Com price: 0, a interface exibe “Preço sob consulta”.
+## Sobre o projeto
 
-O número usado pelo botão do WhatsApp está na constante WHATSAPP_NUMBER (formato internacional, apenas números).
+O Studio Raquel Personalizados reúne produtos feitos sob medida em uma interface responsiva e mobile-first. O catálogo inclui, entre outros itens:
 
-Pedido mínimo
+- Caixas Milk, Pirâmide, Canudo, Sushi, Bala e Almofada;
+- Caixas Maletinha, Sacolinhas personalizadas e embalagens para doces;
+- Convite interativo, cartela de adesivos, etiquetas escolares e rótulos;
+- Centros de mesa, plaquinhas, livrinhos e cards de colorir.
 
-O envio pelo WhatsApp é liberado quando o subtotal do carrinho chega a R$ 40,00. Abaixo desse valor, o carrinho informa quanto falta e mantém o botão desabilitado; qualquer combinação de produtos é aceita, desde que o mínimo seja atingido.
+Os temas, nomes e imagens exibidos são referências: o cliente pode solicitar a personalização para o tema desejado. A página também conta com uma área institucional que apresenta a história da marca e uma chamada para solicitar orçamentos sob medida.
 
-As imagens enviadas pela cliente estão em assets/: logo-banner.png, três imagens de cada produto. A logo é exibida no hero sem distorção.
+![Catálogo completo de produtos](docs/images/screenshot-catalogo.png)
 
-Publicação no GitHub Pages
+## Principais telas e recursos
 
-Envie os arquivos para um repositório no GitHub.
-Em Settings → Pages, escolha Deploy from a branch, selecione main e a pasta / (root).
-Salve e aguarde a publicação. O arquivo index.html será usado como entrada.
+- **Página inicial:** apresentação da marca, chamada para o catálogo e seção de produtos mais pedidos.
+- **Catálogo completo:** cards com imagens, nomes, preços e acesso às opções de cada produto.
+- **Personalização:** campo para informar o tema e seleção de opções extras quando disponíveis. O tema acompanha o item no carrinho e no pedido.
+- **Carrinho lateral:** visualização dos itens, quantidades, adicionais e total do pedido.
+- **Pedido mínimo:** o envio é liberado quando o subtotal chega a **R$ 40,00**; abaixo disso, a interface informa quanto falta.
+- **Orçamento sob medida:** produtos ou modelos que não estão no catálogo podem ser solicitados pelo WhatsApp.
+- **Rodapé e contato:** informações institucionais e acesso ao canal de atendimento.
+
+![Orçamento sob medida e rodapé](docs/images/screenshot-orcamento-rodape.png)
+
+## Fluxo de compra
+
+1. A pessoa escolhe os produtos e modelos que combinam com a sua festa.
+2. Informa o tema, nome, data e demais detalhes solicitados pelo produto.
+3. Confere o carrinho e o valor total, respeitando o pedido mínimo de R$ 40,00.
+4. Envia o pedido para atendimento e segue para o pagamento quando a cobrança é criada.
+5. Após o pagamento, o pedido pode seguir para produção e atendimento personalizado.
+
+A tela “Do seu jeito, do começo ao fim” resume esse caminho: escolha dos itens, envio dos detalhes e produção com carinho.
+
+![Etapas de escolha, detalhes e produção](docs/images/screenshot-processo-historia.png)
+
+## Integração de back-end com n8n
+
+O processamento do pedido é orquestrado por um workflow no **n8n**. De forma geral, o fluxo:
+
+1. recebe o pedido enviado pelo site;
+2. salva as informações em uma planilha;
+3. separa o pedido por categoria;
+4. cria a cobrança correspondente no Mercado Pago;
+5. redireciona a pessoa de volta para o site.
+
+No Mercado Pago, o cliente pode pagar com **cartão de crédito, cartão de débito ou Pix**.
+
+![Workflow do n8n para processamento dos pedidos](docs/images/screenshot-workflow-n8n.png)
+
+## Personalização do catálogo
+
+Os produtos e suas variantes ficam no início de `script.js`, no array `products`. Para atualizar o catálogo, altere os nomes, imagens e valores de `price` em reais (por exemplo, `12.5`). Quando `price` é `0`, a interface exibe “Preço sob consulta”.
+
+O número usado pelo botão do WhatsApp está na constante `WHATSAPP_NUMBER`, no formato internacional e apenas com números.
+
+As imagens dos produtos ficam em `assets/`. A organização atual inclui três referências visuais para diversos produtos, além de imagens usadas no banner e na apresentação da marca.
+
+## Estrutura principal
+
+```text
+.
+├── assets/           # Imagens dos produtos e da interface
+├── docs/images/      # Screenshots da documentação
+├── index.html        # Estrutura da página
+├── script.js         # Catálogo, carrinho e fluxo do pedido
+├── styles.css        # Estilos responsivos
+└── CNAME             # Configuração do domínio, quando aplicável
+```
+
+## Publicação no GitHub Pages
+
+1. Envie os arquivos para um repositório no GitHub.
+2. Em **Settings → Pages**, escolha **Deploy from a branch**.
+3. Selecione a branch `main` e a pasta `/ (root)`.
+4. Salve e aguarde a publicação. O arquivo `index.html` será usado como entrada.
 
 Não é necessário Azure para esta versão estática. O site também pode ser publicado em qualquer hospedagem de arquivos estáticos.
